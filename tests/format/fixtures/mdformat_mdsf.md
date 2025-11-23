@@ -1,24 +1,45 @@
-a test
+sentence wrapping disabled (default)
 .
-This is the input Markdown test,
-then below add the expected output.
+This is a test. It has multiple sentences! Does it work?
 .
-This is the input Markdown test,
-then below add the expected output.
+This is a test. It has multiple sentences! Does it work?
 .
 
-another test
+sentence wrapping with basic text
 .
-Some *markdown*
-
-- a
-- b
-* c
+This is a test. It has multiple sentences! Does it work?
 .
-Some *markdown*
-
-- a
-- b
-
-* c
+This is a test.
+It has multiple sentences!
+Does it work?
 .
+--wrap-sentences
+
+multiple paragraphs
+.
+First paragraph with two sentences. Here is the second one.
+
+Second paragraph also has sentences. This one too!
+.
+First paragraph with two sentences.
+Here is the second one.
+
+Second paragraph also has sentences.
+This one too!
+.
+--wrap-sentences
+
+preserve formatting
+.
+Some *markdown* text. **Bold** and _italic_!
+
+- a list item
+- another item
+.
+Some *markdown* text.
+**Bold** and _italic_!
+
+- a list item
+- another item
+.
+--wrap-sentences

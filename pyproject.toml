@@ -14,9 +14,8 @@ classifiers = [
 ]
 dependencies = [
   "mdformat >= 0.7.19",
-  "mdit-py-plugins >= 0.4.1",
 ]
-keywords = ["markdown", "markdown-it", "mdformat", "mdformat_plugin_template"]
+keywords = ["markdown", "markdown-it", "mdformat", "mdslw", "sentence-wrapping"]
 license = "MIT"
 license-files = ["LICENSE"]
 name = "mdformat_mdformat_mdsf"
@@ -25,7 +24,7 @@ requires-python = ">=3.10.0"
 version = "0.0.1"
 
 [project.entry-points."mdformat.parser_extension"]
-mdformat_mdsf = "mdformat_mdformat_mdsf"
+mdslw = "mdformat_mdformat_mdsf"
 
 [project.optional-dependencies]
 test = [
@@ -35,9 +34,9 @@ test = [
 ]
 
 [project.urls]
-"Bug Tracker" = "https://github.com/kyleking/mdformat-mdformat-mdsf/issues"
-"Changelog" = "https://github.com/kyleking/mdformat-mdformat-mdsf/releases"
-homepage = "https://github.com/kyleking/mdformat-mdformat-mdsf"
+"Bug Tracker" = "https://github.com/kyleking/mdformat-mdsf/issues"
+"Changelog" = "https://github.com/kyleking/mdformat-mdsf/releases"
+homepage = "https://github.com/kyleking/mdformat-mdsf"
 
 [tool.commitizen]
 tag_format = "v${version}"
