@@ -8,7 +8,14 @@ from typing import TYPE_CHECKING
 from ._config import get_config
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from markdown_it import MarkdownIt
+    from mdformat.renderer.typing import Render
+
+
+# Code formatters don't need custom renderers
+RENDERERS: Mapping[str, Render] = {}
 
 
 def add_cli_argument_group(parser: argparse.ArgumentParser) -> None:

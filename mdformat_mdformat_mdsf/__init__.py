@@ -20,6 +20,6 @@ TOML configuration (.mdformat.toml):
 __version__ = "0.0.1"
 
 # Export plugin interface for mdformat parser extension
-from .plugin import add_cli_argument_group, update_mdit
+from .plugin import RENDERERS, add_cli_argument_group, update_mdit
 
-__all__ = ("__version__", "add_cli_argument_group", "update_mdit")
+__all__ = ("__version__", "add_cli_argument_group", "update_mdit", "RENDERERS")
