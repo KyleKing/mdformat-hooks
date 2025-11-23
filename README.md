@@ -29,10 +29,25 @@ This plugin provides code formatters for the following languages:
 
 Add this package wherever you use `mdformat` and the plugin will automatically format code blocks in supported languages. See [additional information on `mdformat` plugins here](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
 
+### Basic Usage
+
 **Command Line:**
 
 ```sh
+# Format all code blocks in supported languages
 mdformat your-file.md
+
+# Use specific mdsf config file
+mdformat --mdsf-config path/to/mdsf.json your-file.md
+
+# Only format specific languages
+mdformat --mdsf-languages python,rust,go your-file.md
+
+# Set custom timeout (default: 30 seconds)
+mdformat --mdsf-timeout 60 your-file.md
+
+# Fail on formatting errors instead of falling back to unformatted code
+mdformat --mdsf-fail-on-error your-file.md
 ```
 
 **Python API:**
@@ -43,15 +58,15 @@ import mdformat
 # Enable specific languages
 formatted = mdformat.text(text, codeformatters={"python", "javascript"})
 
-# Or enable all supported languages
+# With configuration options
 formatted = mdformat.text(
     text,
-    codeformatters={
-        "python", "javascript", "typescript", "rust", "go",
-        "java", "c", "cpp", "csharp", "ruby", "php",
-        "swift", "kotlin", "scala", "shell", "bash",
-        "sh", "zsh", "json", "yaml", "toml", "html",
-        "css", "scss", "sql", "graphql", "markdown", "md"
+    codeformatters={"python", "javascript", "rust"},
+    options={
+        "mdsf_config": "path/to/mdsf.json",
+        "mdsf_timeout": 60,
+        "mdsf_languages": ["python", "rust"],
+        "mdsf_fail_on_error": False,
     }
 )
 ```
@@ -83,7 +98,57 @@ pipx inject mdformat mdformat-mdformat-mdsf
 
 ## Configuration
 
-You can configure mdsf behavior using an `mdsf.json` configuration file in your project. See the [mdsf documentation](https://github.com/hougesen/mdsf) for configuration options.
+### mdsf Configuration
+
+You can configure mdsf's formatters using an `mdsf.json` configuration file in your project. See the [mdsf documentation](https://github.com/hougesen/mdsf) for configuration options.
+
+### Plugin Configuration
+
+The plugin can be configured in three ways:
+
+**1. CLI Arguments**
+
+```sh
+mdformat --mdsf-config path/to/mdsf.json \
+         --mdsf-timeout 60 \
+         --mdsf-languages python,rust,go \
+         --mdsf-fail-on-error \
+         your-file.md
+```
+
+**2. TOML Configuration File** (`.mdformat.toml`)
+
+```toml
+[tool.mdformat.plugin.mdsf]
+config = "path/to/mdsf.json"  # Path to mdsf config file
+timeout = 60                   # Timeout in seconds (default: 30)
+languages = ["python", "rust", "go"]  # Specific languages to format
+fail_on_error = false          # Fail on errors vs. fallback (default: false)
+```
+
+**3. Python API**
+
+```python
+import mdformat
+
+formatted = mdformat.text(
+    text,
+    codeformatters={"python"},
+    options={
+        "mdsf_config": "path/to/mdsf.json",
+        "mdsf_timeout": 60,
+        "mdsf_languages": ["python", "rust"],
+        "mdsf_fail_on_error": False,
+    }
+)
+```
+
+### Configuration Options
+
+- **`config`** / **`--mdsf-config`**: Path to custom mdsf.json configuration file
+- **`timeout`** / **`--mdsf-timeout`**: Maximum time (in seconds) to wait for mdsf (default: 30)
+- **`languages`** / **`--mdsf-languages`**: Specific languages to format (default: all supported languages)
+- **`fail_on_error`** / **`--mdsf-fail-on-error`**: Whether to fail on formatting errors or silently fall back to unformatted code (default: false)
 
 ## Contributing
 

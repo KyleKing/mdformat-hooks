@@ -4,6 +4,12 @@ from __future__ import annotations
 
 import shutil
 import subprocess  # noqa: S404
+from typing import TYPE_CHECKING
+
+from ._config import get_config
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 
 def _find_mdsf_bin() -> str:
@@ -19,7 +25,7 @@ def _find_mdsf_bin() -> str:
     return mdsf_bin
 
 
-def _format_code_with_mdsf(unformatted: str, language: str) -> str:
+def _format_code_with_mdsf(unformatted: str, language: str) -> str:  # noqa: C901, PLR0912
     """Format code using mdsf.
 
     Args:
@@ -28,31 +34,57 @@ def _format_code_with_mdsf(unformatted: str, language: str) -> str:
 
     Returns:
         The formatted code as a string
+
+    Raises:
+        RuntimeError: If mdsf fails and fail_on_error is True
     """
     if not unformatted:
+        return unformatted
+
+    # Get configuration
+    config = get_config()
+
+    # Check if language is enabled
+    if not config.is_language_enabled(language):
         return unformatted
 
     # Create a markdown code block
     markdown_input = f"```{language}\n{unformatted}\n```\n"
 
     # Find mdsf binary
-    mdsf_bin = _find_mdsf_bin()
+    try:
+        mdsf_bin = _find_mdsf_bin()
+    except RuntimeError:
+        if config.fail_on_error:
+            raise
+        return unformatted
+
+    # Build command
+    cmd: list[str] = [mdsf_bin, "format", "--stdin"]
+    if config.config_path:
+        cmd.extend(["--config", config.config_path])
 
     # Call mdsf with stdin
     try:
         result = subprocess.run(  # noqa: S603
-            [mdsf_bin, "format", "--stdin"],
+            cmd,
             input=markdown_input,
             capture_output=True,
             text=True,
             check=True,
-            timeout=30,
+            timeout=config.timeout,
         )
-    except subprocess.CalledProcessError:
-        # If mdsf fails, return unformatted code
+    except subprocess.CalledProcessError as e:
+        # If mdsf fails, either raise or return unformatted code
+        if config.fail_on_error:
+            msg = f"mdsf failed for {language}: {e.stderr}"
+            raise RuntimeError(msg) from e
         return unformatted
-    except subprocess.TimeoutExpired:
-        # If mdsf times out, return unformatted code
+    except subprocess.TimeoutExpired as e:
+        # If mdsf times out, either raise or return unformatted code
+        if config.fail_on_error:
+            msg = f"mdsf timed out for {language} after {config.timeout}s"
+            raise RuntimeError(msg) from e
         return unformatted
     else:
         formatted_output = result.stdout
@@ -75,144 +107,61 @@ def _format_code_with_mdsf(unformatted: str, language: str) -> str:
         return formatted_code
 
 
-# Formatter functions for each supported language
+# Common languages - users can enable/disable via configuration
+SUPPORTED_LANGUAGES: Sequence[str] = (
+    "python",
+    "javascript",
+    "typescript",
+    "rust",
+    "go",
+    "java",
+    "c",
+    "cpp",
+    "csharp",
+    "ruby",
+    "php",
+    "swift",
+    "kotlin",
+    "scala",
+    "shell",
+    "bash",
+    "sh",
+    "zsh",
+    "json",
+    "yaml",
+    "toml",
+    "html",
+    "css",
+    "scss",
+    "sql",
+    "graphql",
+    "markdown",
+    "md",
+)
 
 
-def format_python(unformatted: str, _info_str: str) -> str:
-    """Format Python code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "python")
+# Dynamically create formatter functions for each supported language
+# This allows us to register them as entry points while keeping the code DRY
 
 
-def format_javascript(unformatted: str, _info_str: str) -> str:
-    """Format JavaScript code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "javascript")
+def _make_formatter(lang: str) -> Callable[[str, str], str]:
+    """Create a formatter function for a specific language.
+
+    Args:
+        lang: Language identifier
+
+    Returns:
+        Formatter function with signature (unformatted: str, info_str: str) -> str
+    """
+
+    def formatter(unformatted: str, _info_str: str) -> str:
+        return _format_code_with_mdsf(unformatted, lang)
+
+    formatter.__name__ = f"format_{lang}"
+    formatter.__doc__ = f"Format {lang} code using mdsf."
+    return formatter
 
 
-def format_typescript(unformatted: str, _info_str: str) -> str:
-    """Format TypeScript code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "typescript")
-
-
-def format_rust(unformatted: str, _info_str: str) -> str:
-    """Format Rust code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "rust")
-
-
-def format_go(unformatted: str, _info_str: str) -> str:
-    """Format Go code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "go")
-
-
-def format_java(unformatted: str, _info_str: str) -> str:
-    """Format Java code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "java")
-
-
-def format_c(unformatted: str, _info_str: str) -> str:
-    """Format C code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "c")
-
-
-def format_cpp(unformatted: str, _info_str: str) -> str:
-    """Format C++ code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "cpp")
-
-
-def format_csharp(unformatted: str, _info_str: str) -> str:
-    """Format C# code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "csharp")
-
-
-def format_ruby(unformatted: str, _info_str: str) -> str:
-    """Format Ruby code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "ruby")
-
-
-def format_php(unformatted: str, _info_str: str) -> str:
-    """Format PHP code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "php")
-
-
-def format_swift(unformatted: str, _info_str: str) -> str:
-    """Format Swift code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "swift")
-
-
-def format_kotlin(unformatted: str, _info_str: str) -> str:
-    """Format Kotlin code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "kotlin")
-
-
-def format_scala(unformatted: str, _info_str: str) -> str:
-    """Format Scala code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "scala")
-
-
-def format_shell(unformatted: str, _info_str: str) -> str:
-    """Format Shell code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "shell")
-
-
-def format_bash(unformatted: str, _info_str: str) -> str:
-    """Format Bash code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "bash")
-
-
-def format_sh(unformatted: str, _info_str: str) -> str:
-    """Format sh code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "sh")
-
-
-def format_zsh(unformatted: str, _info_str: str) -> str:
-    """Format Zsh code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "zsh")
-
-
-def format_json(unformatted: str, _info_str: str) -> str:
-    """Format JSON code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "json")
-
-
-def format_yaml(unformatted: str, _info_str: str) -> str:
-    """Format YAML code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "yaml")
-
-
-def format_toml(unformatted: str, _info_str: str) -> str:
-    """Format TOML code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "toml")
-
-
-def format_html(unformatted: str, _info_str: str) -> str:
-    """Format HTML code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "html")
-
-
-def format_css(unformatted: str, _info_str: str) -> str:
-    """Format CSS code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "css")
-
-
-def format_scss(unformatted: str, _info_str: str) -> str:
-    """Format SCSS code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "scss")
-
-
-def format_sql(unformatted: str, _info_str: str) -> str:
-    """Format SQL code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "sql")
-
-
-def format_graphql(unformatted: str, _info_str: str) -> str:
-    """Format GraphQL code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "graphql")
-
-
-def format_markdown(unformatted: str, _info_str: str) -> str:
-    """Format Markdown code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "markdown")
-
-
-def format_md(unformatted: str, _info_str: str) -> str:
-    """Format Markdown code using mdsf."""
-    return _format_code_with_mdsf(unformatted, "md")
+# Create formatter functions for all supported languages
+for _lang in SUPPORTED_LANGUAGES:
+    globals()[f"format_{_lang}"] = _make_formatter(_lang)
