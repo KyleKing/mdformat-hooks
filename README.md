@@ -1,12 +1,60 @@
-# mdformat-mdformat-mdsf
+# mdformat-mdsf
 
 [![Build Status][ci-badge]][ci-link] [![PyPI version][pypi-badge]][pypi-link]
 
-An [mdformat](https://github.com/executablebooks/mdformat) plugin for `<placeholder>`
+An [mdformat](https://github.com/executablebooks/mdformat) plugin for formatting code blocks using [mdsf](https://github.com/hougesen/mdsf).
+
+## Description
+
+This plugin integrates [mdsf](https://github.com/hougesen/mdsf) with mdformat to automatically format code blocks in Markdown files. mdsf supports 332+ different code formatters across many programming languages.
+
+## Prerequisites
+
+You must have `mdsf` installed and available in your PATH. Install it from [https://github.com/hougesen/mdsf](https://github.com/hougesen/mdsf).
+
+## Supported Languages
+
+This plugin provides code formatters for the following languages:
+
+- Python, JavaScript, TypeScript
+- Rust, Go, Java, C, C++, C#
+- Ruby, PHP, Swift, Kotlin, Scala
+- Shell, Bash, Zsh
+- JSON, YAML, TOML
+- HTML, CSS, SCSS
+- SQL, GraphQL
+- Markdown
 
 ## `mdformat` Usage
 
-Add this package wherever you use `mdformat` and the plugin will be auto-recognized. No additional configuration necessary. See [additional information on `mdformat` plugins here](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
+Add this package wherever you use `mdformat` and the plugin will automatically format code blocks in supported languages. See [additional information on `mdformat` plugins here](https://mdformat.readthedocs.io/en/stable/users/plugins.html)
+
+**Command Line:**
+
+```sh
+mdformat your-file.md
+```
+
+**Python API:**
+
+```python
+import mdformat
+
+# Enable specific languages
+formatted = mdformat.text(text, codeformatters={"python", "javascript"})
+
+# Or enable all supported languages
+formatted = mdformat.text(
+    text,
+    codeformatters={
+        "python", "javascript", "typescript", "rust", "go",
+        "java", "c", "cpp", "csharp", "ruby", "php",
+        "swift", "kotlin", "scala", "shell", "bash",
+        "sh", "zsh", "json", "yaml", "toml", "html",
+        "css", "scss", "sql", "graphql", "markdown", "md"
+    }
+)
+```
 
 ### pre-commit / prek
 
@@ -33,24 +81,9 @@ pipx install mdformat
 pipx inject mdformat mdformat-mdformat-mdsf
 ```
 
-## HTML Rendering
+## Configuration
 
-To generate HTML output, `mdformat_mdsf_plugin` can be imported from `mdit_plugins`. For more guidance on `MarkdownIt`, see the docs: <https://markdown-it-py.readthedocs.io/en/latest/using.html#the-parser>
-
-```py
-from markdown_it import MarkdownIt
-
-from mdformat_mdformat_mdsf.mdit_plugins import mdformat_mdsf_plugin
-
-md = MarkdownIt()
-md.use(mdformat_mdsf_plugin)
-
-text = "... markdown example ..."
-md.render(text)
-# <div>
-#
-# </div>
-```
+You can configure mdsf behavior using an `mdsf.json` configuration file in your project. See the [mdsf documentation](https://github.com/hougesen/mdsf) for configuration options.
 
 ## Contributing
 
