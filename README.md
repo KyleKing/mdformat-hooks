@@ -10,7 +10,54 @@ This plugin integrates [mdsf](https://github.com/hougesen/mdsf) with mdformat to
 
 ## Prerequisites
 
-You must have `mdsf` installed and available in your PATH. Install it from [https://github.com/hougesen/mdsf](https://github.com/hougesen/mdsf).
+You must have `mdsf` installed and available in your PATH.
+
+### Installing mdsf
+
+**Recommended: Using mise**
+
+```sh
+# Add to .mise.toml
+[tools]
+"cargo:mdsf" = "latest"
+
+# Or install directly
+mise install cargo:mdsf@latest
+```
+
+**Using pixi**
+
+```sh
+# Add to pixi.toml
+[dependencies]
+mdsf = "*"
+
+# Or install directly
+pixi add mdsf
+```
+
+**Using Cargo (Rust)**
+
+```sh
+cargo install mdsf
+```
+
+**Using Homebrew (macOS/Linux)**
+
+```sh
+brew install mdsf
+```
+
+**Pre-built Binaries**
+
+Download from [mdsf releases](https://github.com/hougesen/mdsf/releases)
+
+**Verify Installation**
+
+```sh
+mdsf --version
+# Should output: mdsf 0.11.0 (or later)
+```
 
 ## Supported Languages
 
@@ -83,20 +130,50 @@ repos:
           - mdformat-mdformat-mdsf
 ```
 
+**Note:** mdsf must be installed separately and available in PATH for pre-commit hooks. Add to your project:
+
+**With mise** (`.mise.toml`):
+```toml
+[tools]
+"cargo:mdsf" = "latest"
+```
+
+**With pixi** (`pixi.toml`):
+```toml
+[dependencies]
+mdsf = "*"
+```
+
 ### uvx
 
 ```sh
-uvx --from mdformat-mdformat-mdsf mdformat
+# mdsf must be installed separately
+mise install cargo:mdsf@latest  # or: cargo install mdsf
+
+# Then use mdformat
+uvx --from mdformat-mdformat-mdsf mdformat your-file.md
 ```
 
-Or with pipx:
+### pipx
 
 ```sh
+# Install mdsf first
+mise install cargo:mdsf@latest  # or: cargo install mdsf
+
+# Install mdformat and plugin
 pipx install mdformat
 pipx inject mdformat mdformat-mdformat-mdsf
 ```
 
 ## Configuration
+
+### Example Configurations
+
+See the [`examples/`](examples/) directory for complete configuration examples:
+- [`.mise.toml.example`](examples/.mise.toml.example) - mise tool configuration
+- [`pixi.toml.example`](examples/pixi.toml.example) - pixi project configuration
+- [`mdsf.json.example`](examples/mdsf.json.example) - mdsf formatter configuration
+- [`.mdformat.toml.example`](examples/.mdformat.toml.example) - mdformat plugin configuration
 
 ### mdsf Configuration
 

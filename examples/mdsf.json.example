@@ -1,0 +1,30 @@
+# Example mdsf configuration
+# Save as mdsf.json in your project root
+# See: https://github.com/hougesen/mdsf
+
+{
+  "$schema": "https://raw.githubusercontent.com/hougesen/mdsf/main/schemas/v0.2.3/mdsf.schema.json",
+  "formatters": {
+    "python": [
+      {
+        "command": "ruff",
+        "arguments": ["format", "--line-length", "100"]
+      }
+    ],
+    "javascript": {
+      "command": "prettier",
+      "arguments": ["--parser", "babel", "--print-width", "100", "--single-quote"]
+    },
+    "typescript": {
+      "command": "prettier",
+      "arguments": ["--parser", "typescript", "--print-width", "100"]
+    },
+    "json": {
+      "command": "prettier",
+      "arguments": ["--parser", "json", "--tab-width", "2"]
+    },
+    "rust": "rustfmt",
+    "go": "gofmt",
+    "toml": "taplo"
+  }
+}
