@@ -39,11 +39,7 @@ class MdsfConfig:
             self._fail_on_error = bool(api_fail)
 
         # Try to get from plugin configuration
-        plugin_opts = (
-            options.get("mdformat", {})
-            .get("plugin", {})
-            .get("mdsf", {})
-        )
+        plugin_opts = options.get("mdformat", {}).get("plugin", {}).get("mdsf", {})
         if plugin_opts:
             if config := plugin_opts.get("config"):
                 self._config_path = config

@@ -114,7 +114,7 @@ formatted = mdformat.text(
         "mdsf_timeout": 60,
         "mdsf_languages": ["python", "rust"],
         "mdsf_fail_on_error": False,
-    }
+    },
 )
 ```
 
@@ -133,12 +133,14 @@ repos:
 **Note:** mdsf must be installed separately and available in PATH for pre-commit hooks. Add to your project:
 
 **With mise** (`.mise.toml`):
+
 ```toml
 [tools]
 "cargo:mdsf" = "latest"
 ```
 
 **With pixi** (`pixi.toml`):
+
 ```toml
 [dependencies]
 mdsf = "*"
@@ -170,6 +172,7 @@ pipx inject mdformat mdformat-mdformat-mdsf
 ### Example Configurations
 
 See the [`examples/`](examples/) directory for complete configuration examples:
+
 - [`.mise.toml.example`](examples/.mise.toml.example) - mise tool configuration
 - [`pixi.toml.example`](examples/pixi.toml.example) - pixi project configuration
 - [`mdsf.json.example`](examples/mdsf.json.example) - mdsf formatter configuration
@@ -187,20 +190,20 @@ The plugin can be configured in three ways:
 
 ```sh
 mdformat --mdsf-config path/to/mdsf.json \
-         --mdsf-timeout 60 \
-         --mdsf-languages python,rust,go \
-         --mdsf-fail-on-error \
-         your-file.md
+    --mdsf-timeout 60 \
+    --mdsf-languages python,rust,go \
+    --mdsf-fail-on-error \
+    your-file.md
 ```
 
 **2. TOML Configuration File** (`.mdformat.toml`)
 
 ```toml
 [tool.mdformat.plugin.mdsf]
-config = "path/to/mdsf.json"  # Path to mdsf config file
-timeout = 60                   # Timeout in seconds (default: 30)
-languages = ["python", "rust", "go"]  # Specific languages to format
-fail_on_error = false          # Fail on errors vs. fallback (default: false)
+config = "path/to/mdsf.json"         # Path to mdsf config file
+timeout = 60                         # Timeout in seconds (default: 30)
+languages = ["python", "rust", "go"] # Specific languages to format
+fail_on_error = false                # Fail on errors vs. fallback (default: false)
 ```
 
 **3. Python API**
@@ -216,7 +219,7 @@ formatted = mdformat.text(
         "mdsf_timeout": 60,
         "mdsf_languages": ["python", "rust"],
         "mdsf_fail_on_error": False,
-    }
+    },
 )
 ```
 

@@ -9,6 +9,6 @@ def hello():
 
 ```javascript
 function hello() {
-  console.log("world");
+   console.log("world");
 }
 ```

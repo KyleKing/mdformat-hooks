@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 RENDERERS: Mapping[str, Render] = {}
 
 
-def add_cli_argument_group(parser: argparse.ArgumentParser) -> None:
+def add_cli_argument_group(parser: argparse.ArgumentParser) -> None:  # pragma: no cover
     """Add CLI arguments for mdsf configuration.
 
     Args:
@@ -55,7 +55,7 @@ def add_cli_argument_group(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def update_mdit(mdit: MarkdownIt) -> None:
+def update_mdit(mdit: MarkdownIt) -> None:  # pragma: no cover
     """Update the markdown-it parser (no-op for code formatters).
 
     Args:
@@ -65,7 +65,7 @@ def update_mdit(mdit: MarkdownIt) -> None:
     # This is only needed for syntax extensions
 
 
-def _setup_from_options(options: dict[str, object]) -> None:
+def _setup_from_options(options: dict[str, object]) -> None:  # pragma: no cover
     """Set up configuration from mdformat options.
 
     Args:
@@ -84,9 +84,7 @@ def _setup_from_options(options: dict[str, object]) -> None:
         config._languages = {  # noqa: SLF001
             lang.strip() for lang in mdsf_languages.split(",")
         }
-    if (mdsf_fail := options.get("mdsf_fail_on_error")) and isinstance(
-        mdsf_fail, bool
-    ):
+    if (mdsf_fail := options.get("mdsf_fail_on_error")) and isinstance(mdsf_fail, bool):
         config._fail_on_error = mdsf_fail  # noqa: SLF001
 
     # Update from mdformat options dict (API and TOML config)

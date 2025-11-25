@@ -15,7 +15,7 @@ classifiers = [
 dependencies = [
   "mdformat >= 0.7.19",
 ]
-keywords = ["markdown", "mdformat", "mdsf", "code-formatter"]
+keywords = ["code-formatter", "markdown", "mdformat", "mdsf"]
 license = "MIT"
 license-files = ["LICENSE"]
 name = "mdformat_mdformat_mdsf"
@@ -23,38 +23,38 @@ readme = "README.md"
 requires-python = ">=3.10.0"
 version = "0.0.1"
 
-[project.entry-points."mdformat.parser_extension"]
-mdsf = "mdformat_mdformat_mdsf"
-
 [project.entry-points."mdformat.codeformatter"]
-python = "mdformat_mdformat_mdsf._formatter:format_python"
-javascript = "mdformat_mdformat_mdsf._formatter:format_javascript"
-typescript = "mdformat_mdformat_mdsf._formatter:format_typescript"
-rust = "mdformat_mdformat_mdsf._formatter:format_rust"
-go = "mdformat_mdformat_mdsf._formatter:format_go"
-java = "mdformat_mdformat_mdsf._formatter:format_java"
+bash = "mdformat_mdformat_mdsf._formatter:format_bash"
 c = "mdformat_mdformat_mdsf._formatter:format_c"
 cpp = "mdformat_mdformat_mdsf._formatter:format_cpp"
 csharp = "mdformat_mdformat_mdsf._formatter:format_csharp"
-ruby = "mdformat_mdformat_mdsf._formatter:format_ruby"
-php = "mdformat_mdformat_mdsf._formatter:format_php"
-swift = "mdformat_mdformat_mdsf._formatter:format_swift"
-kotlin = "mdformat_mdformat_mdsf._formatter:format_kotlin"
-scala = "mdformat_mdformat_mdsf._formatter:format_scala"
-shell = "mdformat_mdformat_mdsf._formatter:format_shell"
-bash = "mdformat_mdformat_mdsf._formatter:format_bash"
-sh = "mdformat_mdformat_mdsf._formatter:format_sh"
-zsh = "mdformat_mdformat_mdsf._formatter:format_zsh"
-json = "mdformat_mdformat_mdsf._formatter:format_json"
-yaml = "mdformat_mdformat_mdsf._formatter:format_yaml"
-toml = "mdformat_mdformat_mdsf._formatter:format_toml"
-html = "mdformat_mdformat_mdsf._formatter:format_html"
 css = "mdformat_mdformat_mdsf._formatter:format_css"
-scss = "mdformat_mdformat_mdsf._formatter:format_scss"
-sql = "mdformat_mdformat_mdsf._formatter:format_sql"
+go = "mdformat_mdformat_mdsf._formatter:format_go"
 graphql = "mdformat_mdformat_mdsf._formatter:format_graphql"
+html = "mdformat_mdformat_mdsf._formatter:format_html"
+java = "mdformat_mdformat_mdsf._formatter:format_java"
+javascript = "mdformat_mdformat_mdsf._formatter:format_javascript"
+json = "mdformat_mdformat_mdsf._formatter:format_json"
+kotlin = "mdformat_mdformat_mdsf._formatter:format_kotlin"
 markdown = "mdformat_mdformat_mdsf._formatter:format_markdown"
 md = "mdformat_mdformat_mdsf._formatter:format_md"
+php = "mdformat_mdformat_mdsf._formatter:format_php"
+python = "mdformat_mdformat_mdsf._formatter:format_python"
+ruby = "mdformat_mdformat_mdsf._formatter:format_ruby"
+rust = "mdformat_mdformat_mdsf._formatter:format_rust"
+scala = "mdformat_mdformat_mdsf._formatter:format_scala"
+scss = "mdformat_mdformat_mdsf._formatter:format_scss"
+sh = "mdformat_mdformat_mdsf._formatter:format_sh"
+shell = "mdformat_mdformat_mdsf._formatter:format_shell"
+sql = "mdformat_mdformat_mdsf._formatter:format_sql"
+swift = "mdformat_mdformat_mdsf._formatter:format_swift"
+toml = "mdformat_mdformat_mdsf._formatter:format_toml"
+typescript = "mdformat_mdformat_mdsf._formatter:format_typescript"
+yaml = "mdformat_mdformat_mdsf._formatter:format_yaml"
+zsh = "mdformat_mdformat_mdsf._formatter:format_zsh"
+
+[project.entry-points."mdformat.parser_extension"]
+mdsf = "mdformat_mdformat_mdsf"
 
 [project.optional-dependencies]
 test = [
