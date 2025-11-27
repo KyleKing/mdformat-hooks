@@ -227,9 +227,8 @@ class TestErrorHandling:
                 side_effect=__import__("subprocess").CalledProcessError(
                     1, "cmd", stderr="mocked error"
                 ),
-            ):
-                with pytest.raises(RuntimeError, match="mdsf failed for python"):
-                    _format_code_with_mdsf("x = 1", "python")
+            ), pytest.raises(RuntimeError, match="mdsf failed for python"):
+                _format_code_with_mdsf("x = 1", "python")
         finally:
             config._fail_on_error = original_fail  # noqa: SLF001
 
@@ -247,9 +246,8 @@ class TestErrorHandling:
             with patch(
                 "subprocess.run",
                 side_effect=__import__("subprocess").TimeoutExpired("cmd", 1),
-            ):
-                with pytest.raises(RuntimeError, match="mdsf timed out for python"):
-                    _format_code_with_mdsf("x = 1", "python")
+            ), pytest.raises(RuntimeError, match="mdsf timed out for python"):
+                _format_code_with_mdsf("x = 1", "python")
         finally:
             config._fail_on_error = original_fail  # noqa: SLF001
             config._timeout = original_timeout  # noqa: SLF001
@@ -285,5 +283,3 @@ class TestErrorHandling:
             result = _format_code_with_mdsf("x = 1", "python")
             # Should return unformatted code
             assert result == "x = 1"
-
-

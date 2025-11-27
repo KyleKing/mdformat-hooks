@@ -60,10 +60,10 @@ rg "def test_" /tmp/mdformat-mkdocs/tests/
 **Key patterns to identify:**
 
 1. How are fixtures loaded from files?
-2. How is parametrization structured?
-3. When are classes used vs functions?
-4. What helper functions exist?
-5. How are IDs assigned to parametrized tests?
+1. How is parametrization structured?
+1. When are classes used vs functions?
+1. What helper functions exist?
+1. How are IDs assigned to parametrized tests?
 
 ## Phase 2: Planning
 
@@ -153,7 +153,7 @@ def test_feature_two() -> None:
 
 **Pattern 1: Simple Parametrization**
 
-```python
+````python
 @pytest.mark.parametrize(
     "language",
     ["python", "javascript", "typescript", "rust"],
@@ -163,7 +163,7 @@ def test_multiple_languages(language: str) -> None:
     unformatted = f"```{language}\ncode\n```"
     result = mdformat.text(unformatted, codeformatters={language})
     assert f"```{language}" in result
-```
+````
 
 **Pattern 2: Multiple Parameters**
 
@@ -184,7 +184,7 @@ def test_configurations(text: str, options: dict, expected: str) -> None:
 
 **Pattern 3: Consolidating Edge Cases**
 
-```python
+````python
 @pytest.mark.parametrize(
     ("description", "code_content"),
     [
@@ -199,20 +199,20 @@ def test_edge_cases(description: str, code_content: str) -> None:
     unformatted = f"```python\n{code_content}```"
     result = format_code(unformatted)
     assert "```python" in result
-```
+````
 
 ### Step 3.3: Add Essential Tests
 
 **Idempotency Test:**
 
-```python
+````python
 def test_idempotency() -> None:
     """Test that formatting is idempotent (formatting twice gives same result)."""
     text = """# Example\n\n```python\ncode\n```"""
     result1 = mdformat.text(text, codeformatters={"python"})
     result2 = mdformat.text(result1, codeformatters={"python"})
     assert result1 == result2, "Formatting should be idempotent"
-```
+````
 
 **Smoke Test:**
 

@@ -9,7 +9,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import mdformat
-import pytest
 
 
 def test_mdformat_text_idempotency():

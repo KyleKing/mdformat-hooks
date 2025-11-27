@@ -33,6 +33,7 @@ Combine multiple conditions for more complex skip logic:
 import sys
 import pytest
 
+
 @pytest.mark.skipif(
     not BINARY_AVAILABLE or sys.platform == "win32",
     reason="binary not installed or on Windows",
@@ -46,9 +47,10 @@ def test_unix_with_binary() -> None:
 
 Use for tests with same logic but different single inputs:
 
-```python
+````python
 import pytest
 import mdformat
+
 
 @pytest.mark.parametrize(
     "language",
@@ -60,7 +62,7 @@ def test_multiple_languages(language: str) -> None:
     unformatted = f"```{language}\ncode\n```"
     result = mdformat.text(unformatted, codeformatters={language})
     assert f"```{language}" in result
-```
+````
 
 ## Pattern: Multiple Parameters
 
@@ -69,6 +71,7 @@ Use when tests need multiple inputs that vary together:
 ```python
 import pytest
 import mdformat
+
 
 @pytest.mark.parametrize(
     ("text", "options", "expected"),
@@ -89,8 +92,9 @@ def test_configurations(text: str, options: dict, expected: str) -> None:
 
 Use when parameters are collections or need complex types:
 
-```python
+````python
 import pytest
+
 
 @pytest.mark.parametrize(
     ("languages", "expected_markers"),
@@ -109,14 +113,15 @@ def test_language_detection(
     result = format_text(SAMPLE_TEXT, languages=languages)
     for marker in expected_markers:
         assert marker in result
-```
+````
 
 ## Pattern: Edge Case Consolidation
 
 Consolidate multiple edge case tests into one parametrized test:
 
-```python
+````python
 import pytest
+
 
 @pytest.mark.parametrize(
     ("description", "code_content"),
@@ -128,14 +133,21 @@ import pytest
         ("multiple_blank_lines", "\n\n\n"),
         ("tabs_and_spaces", "\t  mixed  \t"),
     ],
-    ids=["empty_block", "whitespace_only", "single_line", "with_trailing_newline", "multiple_blank_lines", "tabs_and_spaces"],
+    ids=[
+        "empty_block",
+        "whitespace_only",
+        "single_line",
+        "with_trailing_newline",
+        "multiple_blank_lines",
+        "tabs_and_spaces",
+    ],
 )
 def test_edge_cases(description: str, code_content: str) -> None:
     """Test various edge cases in code formatting."""
     unformatted = f"```python\n{code_content}```"
     result = format_code(unformatted)
     assert "```python" in result
-```
+````
 
 ## Pattern: Fixture Files with markdown-it-py
 
@@ -184,7 +196,7 @@ output
 
 Essential test to ensure formatting is stable:
 
-```python
+````python
 import mdformat
 
 def test_idempotency() -> None:
@@ -194,12 +206,11 @@ def test_idempotency() -> None:
 ```python
 def hello():
     pass
-```
-"""
-    result1 = mdformat.text(text, codeformatters={"python"})
-    result2 = mdformat.text(result1, codeformatters={"python"})
-    assert result1 == result2, "Formatting should be idempotent"
-```
+````
+
+""" result1 = mdformat.text(text, codeformatters={"python"}) result2 = mdformat.text(result1, codeformatters={"python"}) assert result1 == result2, "Formatting should be idempotent"
+
+````
 
 ## Pattern: Smoke Test
 
@@ -216,7 +227,7 @@ def test_plugin_loads() -> None:
     result = mdformat.text(content, extensions={"your_plugin"})
     pth.write_text(result)  # Easier to debug with git
     assert result == content, "Differences found. Review in git."
-```
+````
 
 ## Pattern: Test Helpers Module
 
@@ -270,6 +281,7 @@ Test CLI options and configuration:
 import pytest
 import mdformat
 
+
 @pytest.mark.parametrize(
     ("option_value", "expected_behavior"),
     [
@@ -297,6 +309,7 @@ Test interaction with other mdformat extensions:
 import pytest
 import mdformat
 
+
 @pytest.mark.parametrize(
     ("extensions", "expected"),
     [
@@ -317,9 +330,10 @@ def test_with_extensions(extensions: set[str], expected: str) -> None:
 
 Show clear transformation expectations:
 
-```python
+````python
 import pytest
 import mdformat
+
 
 @pytest.mark.parametrize(
     ("input_text", "expected_output"),
@@ -337,20 +351,20 @@ def test_formatting_transformations(input_text: str, expected_output: str) -> No
     """Test specific formatting transformations."""
     result = mdformat.text(input_text, extensions={"your_plugin"})
     assert result == expected_output
-```
+````
 
 ## Best Practices Summary
 
 1. **Always provide IDs**: Makes test output readable and debugging easier
-2. **Keep parameter names descriptive**: Use `input_text`/`expected_output` not `a`/`b`
-3. **Use type hints**: Required for modern Python and helps catch errors
-4. **Document with docstrings**: Brief explanation of what the test verifies
-5. **Group related tests**: Use meaningful test file organization
-6. **Test edge cases**: Empty strings, whitespace, special characters
-7. **Verify idempotency**: Essential for formatters
-8. **Add smoke tests**: Catch basic integration issues
-9. **Use helpers for repetition**: Create `tests/helpers.py` for shared code
-10. **Make tests independent**: Each test should be runnable in isolation
+1. **Keep parameter names descriptive**: Use `input_text`/`expected_output` not `a`/`b`
+1. **Use type hints**: Required for modern Python and helps catch errors
+1. **Document with docstrings**: Brief explanation of what the test verifies
+1. **Group related tests**: Use meaningful test file organization
+1. **Test edge cases**: Empty strings, whitespace, special characters
+1. **Verify idempotency**: Essential for formatters
+1. **Add smoke tests**: Catch basic integration issues
+1. **Use helpers for repetition**: Create `tests/helpers.py` for shared code
+1. **Make tests independent**: Each test should be runnable in isolation
 
 ## Quick Command Reference
 
