@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-import subprocess
 from unittest.mock import Mock, patch
 
 import mdformat
-import pytest
 
-from mdformat_hooks.plugin import _run_shell_command, POSTPROCESSORS, _create_combined_processor
+from mdformat_hooks.plugin import (
+    POSTPROCESSORS,
+    _create_combined_processor,
+    _run_shell_command,
+)
 
 
 def test_run_shell_command_success():
@@ -51,7 +53,7 @@ def test_postprocessors_dict():
 
 def test_dynamic_postprocessor_with_no_config():
     """Test dynamic postprocessor returns text unchanged with no config."""
-    from mdformat_hooks.plugin import _dynamic_postprocessor
+    from mdformat_hooks.plugin import _dynamic_postprocessor  # noqa: PLC0415
 
     mock_context = Mock(options={"mdformat": {"plugin": {"hooks": {}}}})
     result = _dynamic_postprocessor("test text", Mock(), mock_context)
@@ -60,7 +62,7 @@ def test_dynamic_postprocessor_with_no_config():
 
 def test_dynamic_postprocessor_with_commands():
     """Test dynamic postprocessor applies commands."""
-    from mdformat_hooks.plugin import _dynamic_postprocessor
+    from mdformat_hooks.plugin import _dynamic_postprocessor  # noqa: PLC0415
 
     mock_context = Mock(
         options={
@@ -105,10 +107,10 @@ def test_combined_processor_runs_both_commands(mock_run):
 
     mock_node = Mock()
     mock_context = Mock()
-    result = processor("input text", mock_node, mock_context)
+    result = processor("input text", mock_node, mock_context)  # noqa: F841
 
     # Should have been called twice
-    assert mock_run.call_count == 2
+    assert mock_run.call_count == 2  # noqa: PLR2004
 
 
 def test_mdformat_with_hooks():

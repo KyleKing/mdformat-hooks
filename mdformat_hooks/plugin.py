@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import argparse
-import subprocess
+import subprocess  # noqa: S404
+import sys
 from collections.abc import Mapping
 from typing import Any
 
@@ -37,17 +38,13 @@ def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
     )
 
 
-def _run_shell_command(
-    text: str,
-    command: str | None,
-    timeout: int,
-) -> str:
+def _run_shell_command(text: str, command: str | None, timeout: int) -> str:
     """Run a shell command with the text as stdin."""
     if not command:
         return text
 
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S602
             command,
             input=text,
             capture_output=True,
@@ -59,60 +56,21 @@ def _run_shell_command(
 
         if result.returncode == 0:
             return result.stdout
-        else:
-            # On error, return original text and optionally log
-            import sys
-            print(
-                f"mdformat-hooks: Command failed with code {result.returncode}: {command}",
-                file=sys.stderr,
-            )
-            if result.stderr:
-                print(f"Error output: {result.stderr}", file=sys.stderr)
-            return text
-
+        # On error, return original text and optionally log
+        print(  # noqa: T201
+            f"mdformat-hooks: Command failed with code {result.returncode}: {command}",
+            file=sys.stderr,
+        )
+        if result.stderr:
+            print(f"Error output: {result.stderr}", file=sys.stderr)  # noqa: T201
     except subprocess.TimeoutExpired:
-        import sys
-        print(
+        print(  # noqa: T201
             f"mdformat-hooks: Command timed out after {timeout} seconds: {command}",
             file=sys.stderr,
         )
-        return text
     except Exception as e:
-        import sys
-        print(f"mdformat-hooks: Error running command: {e}", file=sys.stderr)
-        return text
-
-
-def _create_preprocessor(options: Mapping[str, Any]) -> Postprocess | None:
-    """Create a preprocessor if pre_command is configured."""
-    if "mdformat" not in options:
-        return None
-
-    pre_command = get_conf(options, "pre_command")
-    timeout = get_conf(options, "timeout") or 30
-
-    if pre_command:
-        def preprocessor(text: str, node: RenderTreeNode, context: RenderContext) -> str:
-            return _run_shell_command(text, pre_command, int(timeout))
-        return preprocessor
-
-    return None
-
-
-def _create_postprocessor(options: Mapping[str, Any]) -> Postprocess | None:
-    """Create a postprocessor if post_command is configured."""
-    if "mdformat" not in options:
-        return None
-
-    post_command = get_conf(options, "post_command")
-    timeout = get_conf(options, "timeout") or 30
-
-    if post_command:
-        def postprocessor(text: str, node: RenderTreeNode, context: RenderContext) -> str:
-            return _run_shell_command(text, post_command, int(timeout))
-        return postprocessor
-
-    return None
+        print(f"mdformat-hooks: Error running command: {e}", file=sys.stderr)  # noqa: T201
+    return text
 
 
 # mdformat doesn't have a preprocessor interface yet, so we'll use the
@@ -128,25 +86,22 @@ def _create_combined_processor(options: Mapping[str, Any]) -> Postprocess | None
     timeout = get_conf(options, "timeout") or 30
 
     if pre_command or post_command:
-        def processor(text: str, node: RenderTreeNode, context: RenderContext) -> str:
-            # Run pre-command first
+
+        def processor(text: str, _node: RenderTreeNode, _context: RenderContext) -> str:
             if pre_command:
-                text = _run_shell_command(text, pre_command, int(timeout))
-
-            # Then run post-command
+                text = _run_shell_command(text, str(pre_command), int(timeout))
             if post_command:
-                text = _run_shell_command(text, post_command, int(timeout))
-
+                text = _run_shell_command(text, str(post_command), int(timeout))
             return text
+
         return processor
 
     return None
 
 
 # For now, we don't need to modify the parser
-def update_mdit(mdit: Any) -> None:
+def update_mdit(mdit: Any) -> None:  # noqa: ANN401
     """No parser modifications needed for hooks."""
-    pass
 
 
 # No custom renderers needed for shell hooks
@@ -156,7 +111,9 @@ RENDERERS: Mapping[str, Any] = {}
 # Postprocessor needs to be dynamically created based on configuration
 # but mdformat expects a static dict. We'll create a wrapper that checks
 # options at runtime
-def _dynamic_postprocessor(text: str, node: RenderTreeNode, context: RenderContext) -> str:
+def _dynamic_postprocessor(
+    text: str, node: RenderTreeNode, context: RenderContext
+) -> str:
     """Dynamic postprocessor that checks for commands at runtime."""
     # Only process the document root node
     if node.type != "document":
@@ -173,6 +130,4 @@ def _dynamic_postprocessor(text: str, node: RenderTreeNode, context: RenderConte
 
 
 # Static postprocessor mapping expected by mdformat
-POSTPROCESSORS: Mapping[str, Postprocess] = {
-    "document": _dynamic_postprocessor,
-}
+POSTPROCESSORS: Mapping[str, Postprocess] = {"document": _dynamic_postprocessor}

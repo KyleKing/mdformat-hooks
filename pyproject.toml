@@ -17,7 +17,7 @@ dependencies = [
   "mdit-py-plugins >= 0.4.1",
 ]
 description = "An mdformat plugin for running shell commands as pre/post processing hooks"
-keywords = ["markdown", "markdown-it", "mdformat", "hooks", "shell", "commands"]
+keywords = ["markdown", "markdown-it", "mdformat"]
 license = "MIT"
 license-files = ["LICENSE"]
 name = "mdformat_hooks"

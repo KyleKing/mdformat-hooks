@@ -71,13 +71,8 @@ formatted = mdformat.text(
     markdown_text,
     extensions={"hooks"},
     options={
-        "plugin": {
-            "hooks": {
-                "post_command": "mdsf format --stdin",
-                "timeout": 30
-            }
-        }
-    }
+        "plugin": {"hooks": {"post_command": "mdsf format --stdin", "timeout": 30}}
+    },
 )
 ```
 

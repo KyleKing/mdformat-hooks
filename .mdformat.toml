@@ -1,0 +1,3 @@
+[plugin.hooks]
+post_command = "mdsf format --stdin"
+timeout = 30
