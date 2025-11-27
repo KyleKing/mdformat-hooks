@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ._helpers import get_conf
+
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from typing import Any
@@ -22,36 +24,24 @@ class MdsfConfig:
         self._languages: set[str] = set()
         self._fail_on_error: bool = False
 
-    def update_from_options(self, options: Mapping[str, Any]) -> None:  # noqa: C901
+    def update_from_options(self, options: Mapping[str, Any]) -> None:
         """Update configuration from mdformat options.
 
         Args:
             options: Options dictionary from mdformat context
         """
-        # Try to get from API options first
-        if api_config := options.get("mdformat", {}).get("mdsf_config"):
-            self._config_path = api_config
-        if api_timeout := options.get("mdformat", {}).get("mdsf_timeout"):
-            self._timeout = int(api_timeout)
-        if api_languages := options.get("mdformat", {}).get("mdsf_languages"):
-            self._languages = set(api_languages)
-        if api_fail := options.get("mdformat", {}).get("mdsf_fail_on_error"):
-            self._fail_on_error = bool(api_fail)
-
-        # Try to get from plugin configuration
-        plugin_opts = options.get("mdformat", {}).get("plugin", {}).get("mdsf", {})
-        if plugin_opts:
-            if config := plugin_opts.get("config"):
-                self._config_path = config
-            if timeout := plugin_opts.get("timeout"):
-                self._timeout = int(timeout)
-            if languages := plugin_opts.get("languages"):
-                if isinstance(languages, str):
-                    self._languages = {lang.strip() for lang in languages.split(",")}
-                else:
-                    self._languages = set(languages)
-            if fail := plugin_opts.get("fail_on_error"):
-                self._fail_on_error = bool(fail)
+        # Use helper to get config values from API or plugin config
+        if config := get_conf(options, "mdsf_config"):
+            self._config_path = str(config)
+        if timeout := get_conf(options, "mdsf_timeout"):
+            self._timeout = int(timeout)
+        if languages := get_conf(options, "mdsf_languages"):
+            if isinstance(languages, str):
+                self._languages = {lang.strip() for lang in languages.split(",")}
+            else:
+                self._languages = set(languages) if isinstance(languages, list) else {str(languages)}
+        if fail := get_conf(options, "mdsf_fail_on_error"):
+            self._fail_on_error = bool(fail)
 
     def update_from_env(self) -> None:
         """Update configuration from environment variables."""

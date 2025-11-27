@@ -62,11 +62,11 @@ class TestUpdateFromOptions:
         options = {
             "mdformat": {
                 "plugin": {
-                    "mdsf": {
-                        "config": "/path/to/plugin.json",
-                        "timeout": 45,
-                        "languages": ["rust", "go"],
-                        "fail_on_error": True,
+                    "mdformat_mdsf": {
+                        "mdsf_config": "/path/to/plugin.json",
+                        "mdsf_timeout": 45,
+                        "mdsf_languages": ["rust", "go"],
+                        "mdsf_fail_on_error": True,
                     }
                 }
             }
@@ -85,8 +85,8 @@ class TestUpdateFromOptions:
         options = {
             "mdformat": {
                 "plugin": {
-                    "mdsf": {
-                        "languages": "python, javascript, rust",
+                    "mdformat_mdsf": {
+                        "mdsf_languages": "python, javascript, rust",
                     }
                 }
             }

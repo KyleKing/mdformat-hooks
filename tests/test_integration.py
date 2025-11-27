@@ -29,17 +29,6 @@ def hello(  ):
     assert "def hello" in result
 
 
-@pytest.fixture
-def _badly_formatted_python() -> str:
-    """Badly formatted Python code."""
-    return """```python
-def hello(  ):
-    x=1+2
-    return x
-```
-"""
-
-
 @pytest.mark.skipif(not MDSF_AVAILABLE, reason="mdsf not installed")
 @pytest.mark.parametrize(
     ("languages", "expected_markers"),
@@ -143,8 +132,13 @@ def test_edge_cases(description: str, code_content: str) -> None:
 
 
 @pytest.mark.skipif(MDSF_AVAILABLE, reason="mdsf is installed, testing fallback")
-def test_without_mdsf(sample_python_code: str) -> None:
+def test_without_mdsf() -> None:
     """Test that plugin works gracefully without mdsf."""
+    sample_python_code = """```python
+def hello():
+    return 42
+```
+"""
     # Should not raise an error, just return unformatted
     result = mdformat.text(sample_python_code, codeformatters={"python"})
     assert "```python" in result
