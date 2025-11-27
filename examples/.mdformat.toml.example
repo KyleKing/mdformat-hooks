@@ -1,0 +1,24 @@
+# Example mdformat configuration
+# Save as .mdformat.toml in your project root
+# See: https://mdformat.readthedocs.io/en/stable/users/configuration_file.html
+
+# Basic mdformat options
+wrap = 80
+number = false
+
+# Code formatters to enable
+codeformatters = ["python", "javascript", "rust", "json"]
+
+# mdsf plugin configuration
+[plugin.mdsf]
+config = "mdsf.json"       # Path to mdsf config file
+timeout = 60                # Timeout in seconds (default: 30)
+languages = [               # Specific languages to format
+    "python",
+    "javascript",
+    "typescript",
+    "rust",
+    "json",
+    "toml"
+]
+fail_on_error = false       # Fail on errors vs. fallback (default: false)

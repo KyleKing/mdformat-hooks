@@ -1,0 +1,13 @@
+# Example mise configuration for mdformat-mdsf
+# Save as .mise.toml in your project root
+
+[tools]
+# Required: mdsf for code formatting
+"cargo:mdsf" = "latest"
+
+# Optional: Python tools for development
+python = "3.11"
+
+[env]
+# Ensure cargo binaries are in PATH
+_.path = ["$HOME/.cargo/bin"]
