@@ -1,8 +1,8 @@
-"""An mdformat plugin for `shell`."""
+"""An mdformat plugin for running shell commands as pre/post processing hooks."""
 
 __version__ = "0.0.1"
 
-__plugin_name__ = "shell"
+__plugin_name__ = "hooks"
 
 # FYI see source code for available interfaces:
 #   https://github.com/executablebooks/mdformat/blob/5d9b573ce33bae219087984dd148894c774f41d4/src/mdformat/plugins.py

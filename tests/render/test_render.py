@@ -4,7 +4,6 @@ import pytest
 from markdown_it import MarkdownIt
 from markdown_it.utils import read_fixture_file
 
-from mdformat_shell.mdit_plugins import shell_plugin
 from tests.helpers import print_text
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures"
@@ -17,7 +16,8 @@ def with_plugin(filename, plugins):
 @pytest.mark.parametrize(
     ("line", "title", "text", "expected", "plugins"),
     [
-        *with_plugin("shell.md", [shell_plugin]),
+        # No special markdown-it plugins needed for hooks
+        *with_plugin("hooks.md", []),
     ],
 )
 def test_render(line, title, text, expected, plugins):

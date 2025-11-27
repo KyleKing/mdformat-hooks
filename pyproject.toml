@@ -16,17 +16,17 @@ dependencies = [
   "mdformat >= 0.7.19",
   "mdit-py-plugins >= 0.4.1",
 ]
-description = "An mdformat plugin for shell"
-keywords = ["markdown", "markdown-it", "mdformat", "mdformat_plugin_template"]
+description = "An mdformat plugin for running shell commands as pre/post processing hooks"
+keywords = ["markdown", "markdown-it", "mdformat", "hooks", "shell", "commands"]
 license = "MIT"
 license-files = ["LICENSE"]
-name = "mdformat_shell"
+name = "mdformat_hooks"
 readme = "README.md"
 requires-python = ">=3.10.0"
 version = "0.0.1"
 
 [project.entry-points."mdformat.parser_extension"]
-shell = "mdformat_shell"
+hooks = "mdformat_hooks"
 
 [project.optional-dependencies]
 test = [
@@ -36,21 +36,21 @@ test = [
 ]
 
 [project.urls]
-"Bug Tracker" = "https://github.com/kyleking/mdformat-shell/issues"
-"Changelog" = "https://github.com/kyleking/mdformat-shell/releases"
-homepage = "https://github.com/kyleking/mdformat-shell"
+"Bug Tracker" = "https://github.com/kyleking/mdformat-hooks/issues"
+"Changelog" = "https://github.com/kyleking/mdformat-hooks/releases"
+homepage = "https://github.com/kyleking/mdformat-hooks"
 
 [tool.commitizen]
 tag_format = "v${version}"
 version = "0.0.1"
-version_files = ["mdformat_shell/__init__.py", "pyproject.toml:^version"]
+version_files = ["mdformat_hooks/__init__.py", "pyproject.toml:^version"]
 
 [tool.mypy]
 check_untyped_defs = true
 disallow_any_generics = true
 enable_error_code = ["ignore-without-code", "possibly-undefined", "redundant-expr", "truthy-bool"]
 extra_checks = true
-files = ["mdformat_shell", "tests"]
+files = ["mdformat_hooks", "tests"]
 no_implicit_reexport = true
 python_version = "3.10"
 show_column_numbers = true
@@ -63,7 +63,7 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 [tool.pyright]
-include = ["mdformat_shell", "tests"]
+include = ["mdformat_hooks", "tests"]
 pythonVersion = "3.10"
 
 [tool.pytest-watcher]
@@ -72,7 +72,7 @@ now = true
 patterns = ["*.ambr", "*.md", "*.py"]
 runner = "tox"
 # PLANNED: requires support for TYPE_CHECKING https://github.com/beartype/beartype/issues/477
-# runner_args = ["-e", "test", "--", "--exitfirst", "--failed-first", "--new-first", "-vv", "--beartype-packages=mdformat_shell"]
+# runner_args = ["-e", "test", "--", "--exitfirst", "--failed-first", "--new-first", "-vv", "--beartype-packages=mdformat_hooks"]
 runner_args = ["-e", "test", "--", "--exitfirst", "--failed-first", "--new-first", "-vv"]
 
 [tool.ruff]
@@ -116,7 +116,7 @@ unfixable = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ['mdformat_shell', 'tests']
+known-first-party = ['mdformat_hooks', 'tests']
 
 [tool.ruff.lint.per-file-ignores]
 '__init__.py' = [
@@ -186,20 +186,20 @@ skip_install = true
 
 [tool.tox.env.test]
 basepython = ["py314"]
-commands = [["pytest", "--cov=mdformat_shell", {default = [], extend = true, replace = "posargs"}]]
+commands = [["pytest", "--cov=mdformat_hooks", {default = [], extend = true, replace = "posargs"}]]
 # PLANNED: requires support for TYPE_CHECKING https://github.com/beartype/beartype/issues/477
-# description = "Optionally, specify: '-- --exitfirst --failed-first --new-first -vv --beartype-packages=mdformat_shell"
+# description = "Optionally, specify: '-- --exitfirst --failed-first --new-first -vv --beartype-packages=mdformat_hooks"
 description = "Optionally, specify: '-- --exitfirst --failed-first --new-first -vv"
 extras = ["test"]
 
 [tool.tox.env."test-min"]
 basepython = ["py310"]
-commands = [["pytest", "--cov=mdformat_shell"]]
+commands = [["pytest", "--cov=mdformat_hooks"]]
 extras = ["test"]
 
 [tool.tox.env.type]
 basepython = ["py314"]
-commands = [["mypy", "./mdformat_shell", {default = [], extend = true, replace = "posargs"}]]
+commands = [["mypy", "./mdformat_hooks", {default = [], extend = true, replace = "posargs"}]]
 deps = ["mypy>=1.18.2"]
 
 [tool.tox.env_run_base]

@@ -20,7 +20,7 @@ def flatten(nested_list: list[list[T]]) -> list[T]:
 fixtures = flatten(
     [
         read_fixture_file(Path(__file__).parent / "fixtures" / fixture_path)
-        for fixture_path in ("shell.md",)
+        for fixture_path in ("hooks.md",)
     ],
 )
 
@@ -31,6 +31,6 @@ fixtures = flatten(
     ids=[f[1] for f in fixtures],
 )
 def test_format_fixtures(line, title, text, expected):
-    output = mdformat.text(text, extensions={"shell"})
+    output = mdformat.text(text, extensions={"hooks"})
     print_text(output, expected)
     assert output.rstrip() == expected.rstrip()
