@@ -8,8 +8,8 @@ from unittest.mock import Mock, patch
 import mdformat
 import pytest
 
-from mdformat_mdformat_mdsf._config import get_config
-from mdformat_mdformat_mdsf._formatter import _find_mdsf_bin, _format_code_with_mdsf
+from mdformat_mdsf._config import get_config
+from mdformat_mdsf._formatter import _find_mdsf_bin, _format_code_with_mdsf
 
 MDSF_AVAILABLE = shutil.which("mdsf") is not None
 

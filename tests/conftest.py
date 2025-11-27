@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from mdformat_mdformat_mdsf._config import get_config
+from mdformat_mdsf._config import get_config
 
 
 @pytest.fixture(autouse=True)

@@ -20,43 +20,43 @@ description = "An mdformat plugin for mdformat_mdsf"
 keywords = ["markdown", "markdown-it", "mdformat", "mdformat_plugin_template"]
 license = "MIT"
 license-files = ["LICENSE"]
-name = "mdformat_mdformat_mdsf"
+name = "mdformat_mdsf"
 readme = "README.md"
 requires-python = ">=3.10.0"
 version = "0.0.1"
 
 [project.entry-points."mdformat.codeformatter"]
-bash = "mdformat_mdformat_mdsf._formatter:format_bash"
-c = "mdformat_mdformat_mdsf._formatter:format_c"
-cpp = "mdformat_mdformat_mdsf._formatter:format_cpp"
-csharp = "mdformat_mdformat_mdsf._formatter:format_csharp"
-css = "mdformat_mdformat_mdsf._formatter:format_css"
-go = "mdformat_mdformat_mdsf._formatter:format_go"
-graphql = "mdformat_mdformat_mdsf._formatter:format_graphql"
-html = "mdformat_mdformat_mdsf._formatter:format_html"
-java = "mdformat_mdformat_mdsf._formatter:format_java"
-javascript = "mdformat_mdformat_mdsf._formatter:format_javascript"
-json = "mdformat_mdformat_mdsf._formatter:format_json"
-kotlin = "mdformat_mdformat_mdsf._formatter:format_kotlin"
-markdown = "mdformat_mdformat_mdsf._formatter:format_markdown"
-md = "mdformat_mdformat_mdsf._formatter:format_md"
-php = "mdformat_mdformat_mdsf._formatter:format_php"
-python = "mdformat_mdformat_mdsf._formatter:format_python"
-ruby = "mdformat_mdformat_mdsf._formatter:format_ruby"
-rust = "mdformat_mdformat_mdsf._formatter:format_rust"
-scala = "mdformat_mdformat_mdsf._formatter:format_scala"
-scss = "mdformat_mdformat_mdsf._formatter:format_scss"
-sh = "mdformat_mdformat_mdsf._formatter:format_sh"
-shell = "mdformat_mdformat_mdsf._formatter:format_shell"
-sql = "mdformat_mdformat_mdsf._formatter:format_sql"
-swift = "mdformat_mdformat_mdsf._formatter:format_swift"
-toml = "mdformat_mdformat_mdsf._formatter:format_toml"
-typescript = "mdformat_mdformat_mdsf._formatter:format_typescript"
-yaml = "mdformat_mdformat_mdsf._formatter:format_yaml"
-zsh = "mdformat_mdformat_mdsf._formatter:format_zsh"
+bash = "mdformat_mdsf._formatter:format_bash"
+c = "mdformat_mdsf._formatter:format_c"
+cpp = "mdformat_mdsf._formatter:format_cpp"
+csharp = "mdformat_mdsf._formatter:format_csharp"
+css = "mdformat_mdsf._formatter:format_css"
+go = "mdformat_mdsf._formatter:format_go"
+graphql = "mdformat_mdsf._formatter:format_graphql"
+html = "mdformat_mdsf._formatter:format_html"
+java = "mdformat_mdsf._formatter:format_java"
+javascript = "mdformat_mdsf._formatter:format_javascript"
+json = "mdformat_mdsf._formatter:format_json"
+kotlin = "mdformat_mdsf._formatter:format_kotlin"
+markdown = "mdformat_mdsf._formatter:format_markdown"
+md = "mdformat_mdsf._formatter:format_md"
+php = "mdformat_mdsf._formatter:format_php"
+python = "mdformat_mdsf._formatter:format_python"
+ruby = "mdformat_mdsf._formatter:format_ruby"
+rust = "mdformat_mdsf._formatter:format_rust"
+scala = "mdformat_mdsf._formatter:format_scala"
+scss = "mdformat_mdsf._formatter:format_scss"
+sh = "mdformat_mdsf._formatter:format_sh"
+shell = "mdformat_mdsf._formatter:format_shell"
+sql = "mdformat_mdsf._formatter:format_sql"
+swift = "mdformat_mdsf._formatter:format_swift"
+toml = "mdformat_mdsf._formatter:format_toml"
+typescript = "mdformat_mdsf._formatter:format_typescript"
+yaml = "mdformat_mdsf._formatter:format_yaml"
+zsh = "mdformat_mdsf._formatter:format_zsh"
 
 [project.entry-points."mdformat.parser_extension"]
-mdformat_mdsf = "mdformat_mdformat_mdsf"
+mdformat_mdsf = "mdformat_mdsf"
 
 [project.optional-dependencies]
 test = [
@@ -73,14 +73,14 @@ homepage = "https://github.com/kyleking/mdformat-mdformat-mdsf"
 [tool.commitizen]
 tag_format = "v${version}"
 version = "0.0.1"
-version_files = ["mdformat_mdformat_mdsf/__init__.py", "pyproject.toml:^version"]
+version_files = ["mdformat_mdsf/__init__.py", "pyproject.toml:^version"]
 
 [tool.mypy]
 check_untyped_defs = true
 disallow_any_generics = true
 enable_error_code = ["ignore-without-code", "possibly-undefined", "redundant-expr", "truthy-bool"]
 extra_checks = true
-files = ["mdformat_mdformat_mdsf", "tests"]
+files = ["mdformat_mdsf", "tests"]
 no_implicit_reexport = true
 python_version = "3.10"
 show_column_numbers = true
@@ -93,7 +93,7 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 [tool.pyright]
-include = ["mdformat_mdformat_mdsf", "tests"]
+include = ["mdformat_mdsf", "tests"]
 pythonVersion = "3.10"
 
 [tool.pytest-watcher]
@@ -102,7 +102,7 @@ now = true
 patterns = ["*.ambr", "*.md", "*.py"]
 runner = "tox"
 # PLANNED: requires support for TYPE_CHECKING https://github.com/beartype/beartype/issues/477
-# runner_args = ["-e", "test", "--", "--exitfirst", "--failed-first", "--new-first", "-vv", "--beartype-packages=mdformat_mdformat_mdsf"]
+# runner_args = ["-e", "test", "--", "--exitfirst", "--failed-first", "--new-first", "-vv", "--beartype-packages=mdformat_mdsf"]
 runner_args = ["-e", "test", "--", "--exitfirst", "--failed-first", "--new-first", "-vv"]
 
 [tool.ruff]
@@ -146,7 +146,7 @@ unfixable = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ['mdformat_mdformat_mdsf', 'tests']
+known-first-party = ['mdformat_mdsf', 'tests']
 
 [tool.ruff.lint.per-file-ignores]
 '__init__.py' = [
@@ -216,20 +216,20 @@ skip_install = true
 
 [tool.tox.env.test]
 basepython = ["py314"]
-commands = [["pytest", "--cov=mdformat_mdformat_mdsf", {default = [], extend = true, replace = "posargs"}]]
+commands = [["pytest", "--cov=mdformat_mdsf", {default = [], extend = true, replace = "posargs"}]]
 # PLANNED: requires support for TYPE_CHECKING https://github.com/beartype/beartype/issues/477
-# description = "Optionally, specify: '-- --exitfirst --failed-first --new-first -vv --beartype-packages=mdformat_mdformat_mdsf"
+# description = "Optionally, specify: '-- --exitfirst --failed-first --new-first -vv --beartype-packages=mdformat_mdsf"
 description = "Optionally, specify: '-- --exitfirst --failed-first --new-first -vv"
 extras = ["test"]
 
 [tool.tox.env."test-min"]
 basepython = ["py310"]
-commands = [["pytest", "--cov=mdformat_mdformat_mdsf"]]
+commands = [["pytest", "--cov=mdformat_mdsf"]]
 extras = ["test"]
 
 [tool.tox.env.type]
 basepython = ["py314"]
-commands = [["mypy", "./mdformat_mdformat_mdsf", {default = [], extend = true, replace = "posargs"}]]
+commands = [["mypy", "./mdformat_mdsf", {default = [], extend = true, replace = "posargs"}]]
 deps = ["mypy>=1.18.2"]
 
 [tool.tox.env_run_base]

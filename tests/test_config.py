@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from mdformat_mdformat_mdsf._config import MdsfConfig, find_mdsf_config, get_config
+from mdformat_mdsf._config import MdsfConfig, find_mdsf_config, get_config
 
 
 @pytest.fixture

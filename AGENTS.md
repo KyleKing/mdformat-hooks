@@ -57,7 +57,7 @@ The package implements mdformat's plugin interface with up to four key exports i
 
 ### Core Components
 
-**mdformat_mdformat_mdsf/plugin.py**
+**mdformat_mdsf/plugin.py**
 
 - Entry point that configures the mdformat plugin, registers all mdit_plugins, defines custom renders, and handles CLI configuration options
 
@@ -91,4 +91,4 @@ Configuration can be passed via:
 - Uses `tox` for test automation with multiple Python versions (3.10, 3.14)
 - Pre-commit is configured but the project now uses `prek` (faster alternative)
 - Python 3.10+ is required (see `requires-python` in `pyproject.toml`)
-- Version is defined in `mdformat_mdformat_mdsf/__init__.py` as `__version__`
+- Version is defined in `mdformat_mdsf/__init__.py` as `__version__`

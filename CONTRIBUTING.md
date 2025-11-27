@@ -80,10 +80,10 @@ This project uses [PyPI Trusted Publishers](https://docs.pypi.org/trusted-publis
 
 Before publishing for the first time, you need to configure Trusted Publishing on PyPI:
 
-1. Go to your project's page on PyPI: `https://pypi.org/manage/project/mdformat_mdformat_mdsf/settings/publishing/`
+1. Go to your project's page on PyPI: `https://pypi.org/manage/project/mdformat_mdsf/settings/publishing/`
     - If the project doesn't exist yet, go to [PyPI's publishing page](https://pypi.org/manage/account/publishing) to add a "pending" publisher
 1. Add a new Trusted Publisher with these settings:
-    - **PyPI Project Name**: `mdformat_mdformat_mdsf`
+    - **PyPI Project Name**: `mdformat_mdsf`
     - **Owner**: `kyleking`
     - **Repository name**: `mdformat-mdformat-mdsf`
     - **Workflow name**: `tests.yml` (`.github/workflows/tests.yml`)
@@ -95,7 +95,7 @@ Before publishing for the first time, you need to configure Trusted Publishing o
 
 ### Publishing a Release
 
-Use `commitizen` to automatically bump versions (in `pyproject.toml` and `mdformat_mdformat_mdsf/__init__.py`) and create a commit with tag:
+Use `commitizen` to automatically bump versions (in `pyproject.toml` and `mdformat_mdsf/__init__.py`) and create a commit with tag:
 
 ```sh
 # Dry run to preview the version bump
