@@ -5,10 +5,12 @@ from __future__ import annotations
 from unittest.mock import Mock, patch
 
 import mdformat
+import pytest
 
 from mdformat_hooks.plugin import (
     POSTPROCESSORS,
     _create_combined_processor,
+    _dynamic_postprocessor,
     _run_shell_command,
 )
 
@@ -53,8 +55,6 @@ def test_postprocessors_dict():
 
 def test_dynamic_postprocessor_with_no_config():
     """Test dynamic postprocessor returns text unchanged with no config."""
-    from mdformat_hooks.plugin import _dynamic_postprocessor  # noqa: PLC0415
-
     mock_context = Mock(options={"mdformat": {"plugin": {"hooks": {}}}})
     result = _dynamic_postprocessor("test text", Mock(), mock_context)
     assert result == "test text"
@@ -62,8 +62,6 @@ def test_dynamic_postprocessor_with_no_config():
 
 def test_dynamic_postprocessor_with_commands():
     """Test dynamic postprocessor applies commands."""
-    from mdformat_hooks.plugin import _dynamic_postprocessor  # noqa: PLC0415
-
     mock_context = Mock(
         options={
             "mdformat": {
@@ -136,3 +134,111 @@ def test_mdformat_with_post_command():
     }
     result = mdformat.text(text, extensions={"hooks"}, options=options)
     assert result == "# Hello\n\nWorld!\n"
+
+
+# Strict mode tests
+def test_strict_mode_success():
+    """Strict mode passes when command succeeds."""
+    text = "Hello, World!"
+    result = _run_shell_command(text, "cat", timeout=5, strict=True)
+    assert result == text
+
+
+def test_strict_mode_failure_nonzero_exit():
+    """Strict mode raises exception on non-zero exit."""
+    text = "Hello, World!"
+    with pytest.raises(RuntimeError, match="Command failed with exit code"):
+        _run_shell_command(text, "false", timeout=5, strict=True)
+
+
+def test_strict_mode_timeout():
+    """Strict mode raises exception on timeout."""
+    text = "Hello, World!"
+    with pytest.raises(RuntimeError, match="Command timed out"):
+        _run_shell_command(text, "sleep 10", timeout=0.1, strict=True)
+
+
+def test_strict_mode_disabled_by_default():
+    """Non-strict mode (default) returns original text on error."""
+    text = "Hello, World!"
+    # Command fails but strict is False (default), so should return original text
+    result = _run_shell_command(text, "false", timeout=5, strict=False)
+    assert result == text
+
+
+def test_strict_mode_with_pre_command_failure():
+    """Strict mode raises exception on pre_command failure."""
+    mock_node = Mock()
+    mock_node.type = "document"
+
+    mock_context = Mock()
+    mock_context.options = {
+        "mdformat": {
+            "plugin": {
+                "hooks": {
+                    "pre_command": "false",  # Command that fails
+                    "strict_hooks": True,
+                    "timeout": 10,
+                }
+            }
+        }
+    }
+
+    # Should raise because pre_command fails and strict=True
+    with pytest.raises(RuntimeError, match="Command failed with exit code"):
+        _dynamic_postprocessor("test text", mock_node, mock_context)
+
+
+def test_strict_mode_with_post_command_success():
+    """Strict mode allows successful post_command to pass."""
+    mock_node = Mock()
+    mock_node.type = "document"
+
+    mock_context = Mock()
+    mock_context.options = {
+        "mdformat": {
+            "plugin": {
+                "hooks": {
+                    "post_command": "cat",  # Command that succeeds
+                    "strict_hooks": True,
+                    "timeout": 10,
+                }
+            }
+        }
+    }
+
+    # Should work fine because command succeeds
+    result = _dynamic_postprocessor("test text", mock_node, mock_context)
+    assert result == "test text"
+
+
+@patch("subprocess.run")
+def test_strict_mode_combined_processor(mock_run):
+    """Test that strict mode is passed to combined processor."""
+    mock_run.return_value = Mock(
+        returncode=1,  # Failure
+        stdout="",
+        stderr="error output",
+    )
+
+    options = {
+        "mdformat": {
+            "plugin": {
+                "hooks": {
+                    "post_command": "some-cmd",
+                    "strict_hooks": True,
+                    "timeout": 10,
+                }
+            }
+        }
+    }
+
+    processor = _create_combined_processor(options)
+    assert processor is not None
+
+    mock_node = Mock()
+    mock_context = Mock()
+
+    # Should raise because command fails and strict=True
+    with pytest.raises(RuntimeError, match="Command failed with exit code"):
+        processor("input text", mock_node, mock_context)

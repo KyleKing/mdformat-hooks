@@ -14,6 +14,9 @@ tox -e test-min
 
 # Run specific tests with pytest flags
 tox -e test -- --exitfirst --failed-first --new-first -vv --snapshot-update
+
+# Run strict mode tests specifically
+tox -e test -- -k "strict" -vv
 ```
 
 ## Linting and Formatting
@@ -65,13 +68,18 @@ The package implements mdformat's plugin interface with up to four key exports i
 
 Configuration can be passed via:
 
-1. Example CLI arguments: `--cli-argument`
-1. Example TOML config file (`.mdformat.toml`):
+1. CLI arguments: `--pre-command`, `--post-command`, `--timeout`, `--strict-hooks`
+1. TOML config file (`.mdformat.toml`):
     ```toml
     [plugin.hooks]
+    pre_command = "<shell with stdin>"
     post_command = "<shell with stdin>"
+    timeout = 30
+    strict_hooks = true                 # Fail on command errors (default: false)
     ```
 1. API: `mdformat.text(content, extensions={"hooks"}, options={...})`
+
+**Strict Mode**: When `strict_hooks = true`, any non-zero exit code, timeout, or exception from shell commands will raise an error and halt formatting. This is useful in CI/CD environments to ensure all hooks succeed.
 
 ### Testing Strategy
 

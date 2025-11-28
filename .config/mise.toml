@@ -1,2 +1,2 @@
 [env]
-MISE_ENV = "dev,ci"  # This file is replaced in CI to prevent local installs
+MISE_ENV = "dev,ci" # This file is replaced in CI to prevent local installs

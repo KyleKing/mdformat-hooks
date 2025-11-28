@@ -36,10 +36,31 @@ def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
         default=30,
         help="Timeout in seconds for shell commands (default: 30)",
     )
+    group.add_argument(
+        "--strict-hooks",
+        action="store_true",
+        help="Fail formatting if shell commands return non-zero exit codes",
+    )
 
 
-def _run_shell_command(text: str, command: str | None, timeout: int) -> str:
-    """Run a shell command with the text as stdin."""
+def _run_shell_command(
+    text: str, command: str | None, timeout: int, *, strict: bool = False
+) -> str:
+    """Run a shell command with the text as stdin.
+
+    Args:
+        text: Input text to pass to the command via stdin
+        command: Shell command to execute
+        timeout: Command timeout in seconds
+        strict: If True, raise exception on non-zero exit codes
+
+    Returns:
+        Command stdout on success, or original text on failure (non-strict mode)
+
+    Raises:
+        RuntimeError: If strict=True and command fails, times out, or errors
+
+    """
     if not command:
         return text
 
@@ -56,20 +77,32 @@ def _run_shell_command(text: str, command: str | None, timeout: int) -> str:
 
         if result.returncode == 0:
             return result.stdout
-        # On error, return original text and optionally log
-        print(  # noqa: T201
-            f"mdformat-hooks: Command failed with code {result.returncode}: {command}",
-            file=sys.stderr,
+        # On error, log and either raise (strict mode) or return original text
+        error_msg = (
+            f"mdformat-hooks: Command failed with code {result.returncode}: {command}"
         )
+        print(error_msg, file=sys.stderr)  # noqa: T201
         if result.stderr:
             print(f"Error output: {result.stderr}", file=sys.stderr)  # noqa: T201
-    except subprocess.TimeoutExpired:
-        print(  # noqa: T201
-            f"mdformat-hooks: Command timed out after {timeout} seconds: {command}",
-            file=sys.stderr,
+        if strict:
+            stderr_info = f"stderr: {result.stderr}"
+            full_error = (
+                f"Command failed with exit code {result.returncode}: {command}\n"
+                f"{stderr_info}"
+            )
+            raise RuntimeError(full_error)  # noqa: TRY301
+    except subprocess.TimeoutExpired as e:
+        timeout_msg = (
+            f"mdformat-hooks: Command timed out after {timeout} seconds: {command}"
         )
+        print(timeout_msg, file=sys.stderr)  # noqa: T201
+        if strict:
+            raise RuntimeError(timeout_msg) from e
     except Exception as e:
-        print(f"mdformat-hooks: Error running command: {e}", file=sys.stderr)  # noqa: T201
+        error_msg = f"mdformat-hooks: Error running command: {e}"
+        print(error_msg, file=sys.stderr)  # noqa: T201
+        if strict:
+            raise
     return text
 
 
@@ -84,14 +117,19 @@ def _create_combined_processor(options: Mapping[str, Any]) -> Postprocess | None
     pre_command = get_conf(options, "pre_command")
     post_command = get_conf(options, "post_command")
     timeout = get_conf(options, "timeout") or 30
+    strict = get_conf(options, "strict_hooks") or False
 
     if pre_command or post_command:
 
         def processor(text: str, _node: RenderTreeNode, _context: RenderContext) -> str:
             if pre_command:
-                text = _run_shell_command(text, str(pre_command), int(timeout))
+                text = _run_shell_command(
+                    text, str(pre_command), int(timeout), strict=bool(strict)
+                )
             if post_command:
-                text = _run_shell_command(text, str(post_command), int(timeout))
+                text = _run_shell_command(
+                    text, str(post_command), int(timeout), strict=bool(strict)
+                )
             return text
 
         return processor

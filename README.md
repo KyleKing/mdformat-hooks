@@ -59,6 +59,7 @@ You can configure hooks in your `.mdformat.toml` file:
 pre_command = "python scripts/preprocess.py"
 post_command = "mdsf format --stdin"
 timeout = 30
+strict_hooks = true                          # Optional: fail on command errors (useful for CI)
 ```
 
 ### Python API
@@ -71,7 +72,13 @@ formatted = mdformat.text(
     markdown_text,
     extensions={"hooks"},
     options={
-        "plugin": {"hooks": {"post_command": "mdsf format --stdin", "timeout": 30}}
+        "plugin": {
+            "hooks": {
+                "post_command": "mdsf format --stdin",
+                "timeout": 30,
+                "strict_hooks": True,  # Optional: fail on command errors
+            }
+        }
     },
 )
 ```
@@ -84,15 +91,26 @@ formatted = mdformat.text(
 
 ### Error Handling
 
+By default, mdformat-hooks uses graceful error handling:
+
 - If a command fails (non-zero exit code), the original text is returned and an error is printed to stderr
 - If a command times out, the original text is returned and a timeout message is printed to stderr
 - All errors are non-fatal to ensure your formatting workflow continues
+
+**Strict Mode**: Enable strict mode to make command failures halt formatting (useful in CI/CD):
+
+```bash
+mdformat --post-command "mdsf format --stdin" --strict-hooks document.md
+```
+
+In strict mode, any non-zero exit code, timeout, or exception will raise an error and stop formatting.
 
 ## Configuration Options
 
 - `pre_command`: Shell command to run before mdformat processing (optional)
 - `post_command`: Shell command to run after mdformat processing (optional)
 - `timeout`: Maximum time in seconds for each command to execute (default: 30)
+- `strict_hooks`: Fail formatting if commands return non-zero exit codes (default: false)
 
 ## Examples
 
