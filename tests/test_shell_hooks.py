@@ -9,7 +9,7 @@ import pytest
 
 from mdformat_hooks.plugin import (
     POSTPROCESSORS,
-    _create_combined_processor,
+    _create_post_processor,
     _dynamic_postprocessor,
     _run_shell_command,
 )
@@ -80,8 +80,8 @@ def test_dynamic_postprocessor_with_commands():
 
 
 @patch("subprocess.run")
-def test_combined_processor_runs_both_commands(mock_run):
-    """Test that combined processor runs both pre and post commands."""
+def test_post_processor_runs_command(mock_run):
+    """Test that post processor runs post command."""
     mock_run.return_value = Mock(
         returncode=0,
         stdout="processed text",
@@ -92,7 +92,6 @@ def test_combined_processor_runs_both_commands(mock_run):
         "mdformat": {
             "plugin": {
                 "hooks": {
-                    "pre_command": "pre-cmd",
                     "post_command": "post-cmd",
                     "timeout": 10,
                 }
@@ -100,15 +99,15 @@ def test_combined_processor_runs_both_commands(mock_run):
         }
     }
 
-    processor = _create_combined_processor(options)
+    processor = _create_post_processor(options)
     assert processor is not None
 
     mock_node = Mock()
     mock_context = Mock()
     result = processor("input text", mock_node, mock_context)  # noqa: F841
 
-    # Should have been called twice
-    assert mock_run.call_count == 2  # noqa: PLR2004
+    # Should have been called once
+    assert mock_run.call_count == 1
 
 
 def test_mdformat_with_hooks():
@@ -166,8 +165,8 @@ def test_strict_mode_disabled_by_default():
     assert result == text
 
 
-def test_strict_mode_with_pre_command_failure():
-    """Strict mode raises exception on pre_command failure."""
+def test_strict_mode_with_post_command_failure():
+    """Strict mode raises exception on post_command failure."""
     mock_node = Mock()
     mock_node.type = "document"
 
@@ -176,7 +175,7 @@ def test_strict_mode_with_pre_command_failure():
         "mdformat": {
             "plugin": {
                 "hooks": {
-                    "pre_command": "false",  # Command that fails
+                    "post_command": "false",  # Command that fails
                     "strict_hooks": True,
                     "timeout": 10,
                 }
@@ -184,7 +183,7 @@ def test_strict_mode_with_pre_command_failure():
         }
     }
 
-    # Should raise because pre_command fails and strict=True
+    # Should raise because post_command fails and strict=True
     with pytest.raises(RuntimeError, match="Command failed with exit code"):
         _dynamic_postprocessor("test text", mock_node, mock_context)
 
@@ -213,8 +212,8 @@ def test_strict_mode_with_post_command_success():
 
 
 @patch("subprocess.run")
-def test_strict_mode_combined_processor(mock_run):
-    """Test that strict mode is passed to combined processor."""
+def test_strict_mode_post_processor(mock_run):
+    """Test that strict mode is passed to post processor."""
     mock_run.return_value = Mock(
         returncode=1,  # Failure
         stdout="",
@@ -233,7 +232,7 @@ def test_strict_mode_combined_processor(mock_run):
         }
     }
 
-    processor = _create_combined_processor(options)
+    processor = _create_post_processor(options)
     assert processor is not None
 
     mock_node = Mock()

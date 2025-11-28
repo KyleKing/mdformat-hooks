@@ -21,11 +21,6 @@ def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
 
     """
     group.add_argument(
-        "--pre-command",
-        type=str,
-        help="Shell command to run before formatting (receives text via stdin)",
-    )
-    group.add_argument(
         "--post-command",
         type=str,
         help="Shell command to run after formatting (receives text via stdin)",
@@ -39,7 +34,7 @@ def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
     group.add_argument(
         "--strict-hooks",
         action="store_true",
-        help="Fail formatting if shell commands return non-zero exit codes",
+        help="Fail formatting if shell command returns non-zero exit code",
     )
 
 
@@ -106,31 +101,22 @@ def _run_shell_command(
     return text
 
 
-# mdformat doesn't have a preprocessor interface yet, so we'll use the
-# postprocessor for both pre and post commands, running them in sequence
-def _create_combined_processor(options: Mapping[str, Any]) -> Postprocess | None:
-    """Create a combined processor for pre and post commands."""
+def _create_post_processor(options: Mapping[str, Any]) -> Postprocess | None:
+    """Create a post processor for post commands."""
     # Check if mdformat key exists in options
     if "mdformat" not in options:
         return None
 
-    pre_command = get_conf(options, "pre_command")
     post_command = get_conf(options, "post_command")
     timeout = get_conf(options, "timeout") or 30
     strict = get_conf(options, "strict_hooks") or False
 
-    if pre_command or post_command:
+    if post_command:
 
         def processor(text: str, _node: RenderTreeNode, _context: RenderContext) -> str:
-            if pre_command:
-                text = _run_shell_command(
-                    text, str(pre_command), int(timeout), strict=bool(strict)
-                )
-            if post_command:
-                text = _run_shell_command(
-                    text, str(post_command), int(timeout), strict=bool(strict)
-                )
-            return text
+            return _run_shell_command(
+                text, str(post_command), int(timeout), strict=bool(strict)
+            )
 
         return processor
 
@@ -161,7 +147,7 @@ def _dynamic_postprocessor(
 
     # The options might be under different keys depending on how mdformat is called
     # Check for configuration in the expected location
-    processor = _create_combined_processor(options)
+    processor = _create_post_processor(options)
     if processor:
         return processor(text, node, context)
     return text

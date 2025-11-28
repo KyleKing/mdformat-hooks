@@ -68,11 +68,10 @@ The package implements mdformat's plugin interface with up to four key exports i
 
 Configuration can be passed via:
 
-1. CLI arguments: `--pre-command`, `--post-command`, `--timeout`, `--strict-hooks`
+1. CLI arguments: `--post-command`, `--timeout`, `--strict-hooks`
 1. TOML config file (`.mdformat.toml`):
     ```toml
     [plugin.hooks]
-    pre_command = "<shell with stdin>"
     post_command = "<shell with stdin>"
     timeout = 30
     strict_hooks = true                 # Fail on command errors (default: false)

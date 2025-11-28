@@ -2,7 +2,7 @@
 
 [![Build Status][ci-badge]][ci-link] [![PyPI version][pypi-badge]][pypi-link]
 
-An [mdformat](https://github.com/executablebooks/mdformat) plugin for running shell commands as pre/post processing hooks. This allows you to integrate external tools like [mdsf](https://github.com/hougesen/mdsf).
+An [mdformat](https://github.com/executablebooks/mdformat) plugin for running shell commands as post-processing hooks. This allows you to integrate external tools like [mdsf](https://github.com/hougesen/mdsf).
 
 ## Installation
 
@@ -43,11 +43,8 @@ You can use mdformat-hooks via the command line with the following options:
 # Run a post-processing command (e.g., mdsf for additional formatting)
 mdformat --post-command "mdsf format --stdin" document.md
 
-# Run a pre-processing command
-mdformat --pre-command "python scripts/preprocess.py" document.md
-
-# Run both pre and post commands with custom timeout
-mdformat --pre-command "cat" --post-command "mdsf format --stdin" --timeout 60 document.md
+# Run a post command with custom timeout
+mdformat --post-command "mdsf format --stdin" --timeout 60 document.md
 ```
 
 ### Configuration File
@@ -56,7 +53,6 @@ You can configure hooks in your `.mdformat.toml` file:
 
 ```toml
 [plugin.hooks]
-pre_command = "python scripts/preprocess.py"
 post_command = "mdsf format --stdin"
 timeout = 30
 strict_hooks = true                          # Optional: fail on command errors (useful for CI)
@@ -85,7 +81,6 @@ formatted = mdformat.text(
 
 ## How It Works
 
-1. **Pre-command**: If configured, the pre-command receives the markdown text via stdin before mdformat processes it
 1. **mdformat**: The text is formatted by mdformat as usual
 1. **Post-command**: If configured, the formatted text is passed to the post-command via stdin for additional processing
 
@@ -107,10 +102,9 @@ In strict mode, any non-zero exit code, timeout, or exception will raise an erro
 
 ## Configuration Options
 
-- `pre_command`: Shell command to run before mdformat processing (optional)
-- `post_command`: Shell command to run after mdformat processing (optional)
-- `timeout`: Maximum time in seconds for each command to execute (default: 30)
-- `strict_hooks`: Fail formatting if commands return non-zero exit codes (default: false)
+- `post_command`: Shell command to run after mdformat processing
+- `timeout`: Maximum time in seconds for the command to execute (default: 30)
+- `strict_hooks`: Fail formatting if command returns non-zero exit code (default: false)
 
 ## Examples
 
@@ -121,15 +115,6 @@ In strict mode, any non-zero exit code, timeout, or exception will raise an erro
 ```toml
 [plugin.hooks]
 post_command = "mdsf format --stdin"
-```
-
-### Custom Pre-processing
-
-Run a Python script to prepare your markdown:
-
-```toml
-[plugin.hooks]
-pre_command = "python scripts/expand_templates.py"
 ```
 
 ### Chaining Multiple Tools
