@@ -1,0 +1,4 @@
+[tools]
+"pipx:ruff" = "latest"
+"pipx:sqlfluff" = "latest"
+"pipx:toml-sort" = "latest"

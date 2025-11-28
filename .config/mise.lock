@@ -1,14 +1,14 @@
-[[tools."cargo:mdsf"]]
-version = "0.11.0"
-backend = "cargo:mdsf"
-
-[[tools."pipx:prek"]]
-version = "0.2.18"
-backend = "pipx:prek"
-
 [[tools."pipx:pytest-watcher"]]
 version = "0.4.3"
 backend = "pipx:pytest-watcher"
+
+[[tools."pipx:sqlfluff"]]
+version = "3.5.0"
+backend = "pipx:sqlfluff"
+
+[[tools."pipx:toml-sort"]]
+version = "0.24.3"
+backend = "pipx:toml-sort"
 
 [[tools."pipx:tox"]]
 version = "4.32.0"
@@ -21,7 +21,3 @@ backend = "core:python"
 [[tools.python]]
 version = "3.14.0"
 backend = "core:python"
-
-[[tools.uv]]
-version = "0.9.11"
-backend = "aqua:astral-sh/uv"

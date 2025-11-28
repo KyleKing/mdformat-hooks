@@ -49,6 +49,13 @@ jobs:
         uses: j178/prek-action@v1
         with:
           install-only: true
+      - name: Install mdsf
+        uses: hougesen/mdsf@main
+      - uses: jdx/mise-action@v2
+        with:
+          mise_toml: |
+            [env]
+            MISE_ENV = "ci"
       - name: Install Package
         run: uv pip install ".[test]"
       - name: run prek with plugin
