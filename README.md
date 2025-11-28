@@ -55,7 +55,7 @@ You can configure hooks in your `.mdformat.toml` file:
 [plugin.hooks]
 post_command = "mdsf format --stdin"
 timeout = 30
-strict_hooks = true                          # Optional: fail on command errors (useful for CI)
+strict_hooks = true                  # Optional: fail on command errors (useful for CI)
 ```
 
 ### Python API
@@ -119,11 +119,11 @@ post_command = "mdsf format --stdin"
 
 ### Chaining Multiple Tools
 
-Since commands run in shell, you can chain multiple operations:
+Since commands run in shell, you can chain multiple operations as long as the tool reads from STDIN and writes to STDOUT:
 
 ```toml
 [plugin.hooks]
-post_command = "prettier --parser markdown --stdin-filepath doc.md | mdsf format --stdin"
+post_command = "mdsf format --stdin | typos-cli - --write-changes"
 ```
 
 ## Contributing

@@ -1,4 +1,5 @@
 [tools]
+"cargo:typos-cli" = "latest"
 "pipx:ruff" = "latest"
 "pipx:sqlfluff" = "latest"
 "pipx:toml-sort" = "latest"
