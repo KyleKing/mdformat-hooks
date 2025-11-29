@@ -103,24 +103,22 @@ def _run_shell_command(
 
 def _create_post_processor(options: Mapping[str, Any]) -> Postprocess | None:
     """Create a post processor for post commands."""
-    # Check if mdformat key exists in options
     if "mdformat" not in options:
         return None
 
     post_command = get_conf(options, "post_command")
+    if not post_command:
+        return None
+
     timeout = get_conf(options, "timeout") or 30
     strict = get_conf(options, "strict_hooks") or False
 
-    if post_command:
+    def processor(text: str, _node: RenderTreeNode, _context: RenderContext) -> str:
+        return _run_shell_command(
+            text, str(post_command), int(timeout), strict=bool(strict)
+        )
 
-        def processor(text: str, _node: RenderTreeNode, _context: RenderContext) -> str:
-            return _run_shell_command(
-                text, str(post_command), int(timeout), strict=bool(strict)
-            )
-
-        return processor
-
-    return None
+    return processor
 
 
 # For now, we don't need to modify the parser
@@ -138,7 +136,11 @@ RENDERERS: Mapping[str, Any] = {}
 def _dynamic_postprocessor(
     text: str, node: RenderTreeNode, context: RenderContext
 ) -> str:
-    """Dynamic postprocessor that checks for commands at runtime."""
+    """Dynamic postprocessor that checks for commands at runtime.
+
+    Only processes the document root node to avoid running hooks
+    multiple times for nested nodes in the rendering tree.
+    """
     # Only process the document root node
     if node.type != "document":
         return text

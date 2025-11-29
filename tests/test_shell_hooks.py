@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 from unittest.mock import Mock, patch
 
 import mdformat
@@ -12,6 +13,7 @@ from mdformat_hooks.plugin import (
     _create_post_processor,
     _dynamic_postprocessor,
     _run_shell_command,
+    add_cli_argument_group,
 )
 
 
@@ -241,3 +243,73 @@ def test_strict_mode_post_processor(mock_run):
     # Should raise because command fails and strict=True
     with pytest.raises(RuntimeError, match="Command failed with exit code"):
         processor("input text", mock_node, mock_context)
+
+
+# CLI argument group tests
+def test_add_cli_argument_group():
+    """Test that CLI argument group adds correct arguments."""
+    parser = argparse.ArgumentParser()
+    group = parser.add_argument_group("hooks")
+
+    # Add the arguments
+    add_cli_argument_group(group)
+
+    # Parse some test arguments
+    test_timeout = 60
+    args = parser.parse_args(
+        ["--post-command", "cat", "--timeout", str(test_timeout), "--strict-hooks"]
+    )
+
+    # Verify arguments were added correctly
+    assert args.post_command == "cat"
+    assert args.timeout == test_timeout
+    assert args.strict_hooks is True
+
+
+def test_add_cli_argument_group_defaults():
+    """Test CLI argument defaults."""
+    parser = argparse.ArgumentParser()
+    group = parser.add_argument_group("hooks")
+
+    add_cli_argument_group(group)
+
+    # Parse with no arguments to check defaults
+    args = parser.parse_args([])
+
+    # Verify defaults (timeout default is 30 as defined in add_cli_argument_group)
+    default_timeout = 30
+    assert args.post_command is None
+    assert args.timeout == default_timeout
+    assert args.strict_hooks is False
+
+
+def test_add_cli_argument_group_argument_properties():
+    """Test that CLI arguments have correct properties."""
+    parser = argparse.ArgumentParser()
+    group = parser.add_argument_group("hooks")
+
+    add_cli_argument_group(group)
+
+    # Find the added actions in the parser
+    actions = {action.dest: action for action in parser._actions}  # noqa: SLF001
+
+    # Check post_command argument
+    assert "post_command" in actions
+    post_cmd_action = actions["post_command"]
+    assert post_cmd_action.type is str
+    assert "Shell command" in post_cmd_action.help
+
+    # Check timeout argument
+    assert "timeout" in actions
+    timeout_action = actions["timeout"]
+    assert timeout_action.type is int
+    default_timeout = 30
+    assert timeout_action.default == default_timeout
+    assert "Timeout" in timeout_action.help
+
+    # Check strict_hooks argument
+    assert "strict_hooks" in actions
+    strict_action = actions["strict_hooks"]
+    # Check that it's a store_true action
+    assert isinstance(strict_action, argparse._StoreTrueAction)  # noqa: SLF001
+    assert "Fail formatting" in strict_action.help
