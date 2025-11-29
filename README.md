@@ -117,6 +117,8 @@ In strict mode, any non-zero exit code, timeout, or exception will raise an erro
 post_command = "mdsf format --stdin"
 ```
 
+**Note**: `mdsf` will require additional configuration. Run `mdsf init` and see the README for more: <https://github.com/hougesen/mdsf>
+
 ### Chaining Multiple Tools
 
 Since commands run in shell, you can chain multiple operations as long as the tool reads from STDIN and writes to STDOUT:
