@@ -1,6 +1,6 @@
 """An mdformat plugin for running shell commands as post-processing hooks."""
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 __plugin_name__ = "hooks"
 
