@@ -23,7 +23,7 @@ repos:
 ### uvx
 
 ```sh
-uvx --with mdformat-hooks mdformat
+uvx --with=mdformat-hooks mdformat
 ```
 
 Or with pipx:

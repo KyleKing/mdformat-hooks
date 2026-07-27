@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-import subprocess  # noqa: S404
+import subprocess  # ruff: ignore[suspicious-subprocess-import]
 import sys
 from collections.abc import Mapping
 from typing import Any
@@ -60,7 +60,7 @@ def _run_shell_command(
         return text
 
     try:
-        result = subprocess.run(  # noqa: S602
+        result = subprocess.run(  # ruff: ignore[subprocess-popen-with-shell-equals-true]
             command,
             input=text,
             capture_output=True,
@@ -76,26 +76,26 @@ def _run_shell_command(
         error_msg = (
             f"mdformat-hooks: Command failed with code {result.returncode}: {command}"
         )
-        print(error_msg, file=sys.stderr)  # noqa: T201
+        print(error_msg, file=sys.stderr)  # ruff: ignore[print]
         if result.stderr:
-            print(f"Error output: {result.stderr}", file=sys.stderr)  # noqa: T201
+            print(f"Error output: {result.stderr}", file=sys.stderr)  # ruff: ignore[print]
         if strict:
             stderr_info = f"stderr: {result.stderr}"
             full_error = (
                 f"Command failed with exit code {result.returncode}: {command}\n"
                 f"{stderr_info}"
             )
-            raise RuntimeError(full_error)  # noqa: TRY301
+            raise RuntimeError(full_error)  # ruff: ignore[raise-within-try]
     except subprocess.TimeoutExpired as e:
         timeout_msg = (
             f"mdformat-hooks: Command timed out after {timeout} seconds: {command}"
         )
-        print(timeout_msg, file=sys.stderr)  # noqa: T201
+        print(timeout_msg, file=sys.stderr)  # ruff: ignore[print]
         if strict:
             raise RuntimeError(timeout_msg) from e
     except Exception as e:
         error_msg = f"mdformat-hooks: Error running command: {e}"
-        print(error_msg, file=sys.stderr)  # noqa: T201
+        print(error_msg, file=sys.stderr)  # ruff: ignore[print]
         if strict:
             raise
     return text
@@ -122,7 +122,7 @@ def _create_post_processor(options: Mapping[str, Any]) -> Postprocess | None:
 
 
 # For now, we don't need to modify the parser
-def update_mdit(mdit: Any) -> None:  # noqa: ANN401
+def update_mdit(mdit: Any) -> None:  # ruff: ignore[any-type]
     """No parser modifications needed for hooks."""
 
 

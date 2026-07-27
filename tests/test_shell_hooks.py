@@ -106,7 +106,7 @@ def test_post_processor_runs_command(mock_run):
 
     mock_node = Mock()
     mock_context = Mock()
-    result = processor("input text", mock_node, mock_context)  # noqa: F841
+    result = processor("input text", mock_node, mock_context)  # ruff: ignore[unused-variable]
 
     # Should have been called once
     assert mock_run.call_count == 1
@@ -291,7 +291,7 @@ def test_add_cli_argument_group_argument_properties():
     add_cli_argument_group(group)
 
     # Find the added actions in the parser
-    actions = {action.dest: action for action in parser._actions}  # noqa: SLF001
+    actions = {action.dest: action for action in parser._actions}  # ruff: ignore[private-member-access]
 
     # Check post_command argument
     assert "post_command" in actions
@@ -311,5 +311,5 @@ def test_add_cli_argument_group_argument_properties():
     assert "strict_hooks" in actions
     strict_action = actions["strict_hooks"]
     # Check that it's a store_true action
-    assert isinstance(strict_action, argparse._StoreTrueAction)  # noqa: SLF001
+    assert isinstance(strict_action, argparse._StoreTrueAction)  # ruff: ignore[private-member-access]
     assert "Fail formatting" in strict_action.help
