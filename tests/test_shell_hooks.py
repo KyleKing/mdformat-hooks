@@ -276,11 +276,20 @@ def test_add_cli_argument_group_defaults():
     # Parse with no arguments to check defaults
     args = parser.parse_args([])
 
-    # Verify defaults (timeout default is 30 as defined in add_cli_argument_group)
-    default_timeout = 30
+    # Every default must be None so an absent flag defers to `.mdformat.toml`
     assert args.post_command is None
-    assert args.timeout == default_timeout
-    assert args.strict_hooks is False
+    assert args.timeout is None
+    assert args.strict_hooks is None
+
+
+def test_absent_cli_flags_defer_to_toml():
+    """Absent flags parse to `None`, which mdformat drops so TOML settings win."""
+    parser = argparse.ArgumentParser()
+    add_cli_argument_group(parser.add_argument_group("hooks"))
+
+    supplied = {k: v for k, v in vars(parser.parse_args([])).items() if v is not None}
+
+    assert supplied == {}
 
 
 def test_add_cli_argument_group_argument_properties():
@@ -303,13 +312,13 @@ def test_add_cli_argument_group_argument_properties():
     assert "timeout" in actions
     timeout_action = actions["timeout"]
     assert timeout_action.type is int
-    default_timeout = 30
-    assert timeout_action.default == default_timeout
+    assert timeout_action.default is None
     assert "Timeout" in timeout_action.help
 
     # Check strict_hooks argument
     assert "strict_hooks" in actions
     strict_action = actions["strict_hooks"]
-    # Check that it's a store_true action
-    assert isinstance(strict_action, argparse._StoreTrueAction)  # ruff: ignore[private-member-access]
+    assert isinstance(strict_action, argparse._StoreConstAction)  # ruff: ignore[private-member-access]
+    assert strict_action.const is True
+    assert strict_action.default is None
     assert "Fail formatting" in strict_action.help

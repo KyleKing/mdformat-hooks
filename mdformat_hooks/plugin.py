@@ -19,6 +19,9 @@ def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
 
     Options are stored in `mdit.options["mdformat"]["plugin"]["hooks"]`
 
+    Every argument must keep a `None` default so that an absent flag falls
+    through to the `.mdformat.toml` value; any other default overrides TOML.
+
     """
     group.add_argument(
         "--post-command",
@@ -28,12 +31,12 @@ def add_cli_argument_group(group: argparse._ArgumentGroup) -> None:
     group.add_argument(
         "--timeout",
         type=int,
-        default=30,
         help="Timeout in seconds for shell commands (default: 30)",
     )
     group.add_argument(
         "--strict-hooks",
-        action="store_true",
+        action="store_const",
+        const=True,
         help="Fail formatting if shell command returns non-zero exit code",
     )
 
