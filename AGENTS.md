@@ -53,6 +53,8 @@ tox -e canary -- some-repo another-repo
 
 Clones real consumer repos via git sparse checkout and runs a two-pass idempotency check: format once, format again, compare. Not part of the default `tox` run, so invoke it before releasing. Configure tracked repos in `scripts/canary_repos.json`.
 
+`canary_repos.json` is deliberately empty here, and adding repos to it would not exercise this plugin. The check measures whether `mdformat.text(..., extensions={"hooks"})` is idempotent, and this plugin adds nothing to that pipeline unless a `post_command` is configured: `update_mdit` is a no-op, `RENDERERS` is empty, and the postprocessor returns its input untouched with no command set. `canary.py` has no way to supply one, and no public repo configures one either. The postprocessor also never fires, because `POSTPROCESSORS` is keyed on `"document"` while mdformat renders from a node of type `"root"`. Populating the list only becomes worthwhile once that key is corrected and a canary entry can pass a real `post_command` through to the shell hook.
+
 ## Pre-commit Hook Testing
 
 ```bash
