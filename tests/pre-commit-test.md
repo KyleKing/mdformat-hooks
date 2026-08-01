@@ -52,14 +52,9 @@ class StatusManager:
 ## TOML
 
 ```toml
+enabled = true
 name = "example-config"
 version = "1.0.0"
-enabled = true
-
-[settings]
-timeout = 30
-retries = 3
-endpoints = ["https://api.example.com", "https://backup.example.com"]
 
 [features]
 logging = true
@@ -76,6 +71,11 @@ steps = ["checkout", "install-deps", "run-tests"]
 [[jobs]]
 name = "deploy"
 steps = ["build-image", "push-image", "update-service"]
+
+[settings]
+endpoints = ["https://api.example.com", "https://backup.example.com"]
+retries = 3
+timeout = 30
 ```
 
 ## SQL
@@ -95,11 +95,11 @@ CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_users_role ON users (role);
 
 INSERT INTO
-    users (name, email, role)
+users (name, email, role)
 VALUES
-    ('John Doe', 'john@example.com', 'admin'),
-    ('Jane Smith', 'jane@example.com', 'user'),
-    ('Bob Johnson', 'bob@example.com', 'user');
+('John Doe', 'john@example.com', 'admin'),
+('Jane Smith', 'jane@example.com', 'user'),
+('Bob Johnson', 'bob@example.com', 'user');
 
 SELECT
     u.id,
@@ -108,7 +108,7 @@ SELECT
     u.role,
     COUNT(o.id) AS order_count
 FROM users u
-    LEFT JOIN orders o ON u.id = o.user_id
+LEFT JOIN orders o ON u.id = o.user_id
 WHERE
     u.role IN ('admin', 'user')
     AND u.created_at >= NOW() - INTERVAL '30 days'
