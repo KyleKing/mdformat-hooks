@@ -1,0 +1,16 @@
+# 2026-08-01
+
+Stashed the pre-existing uncommitted work instead of committing it. Recover it with
+`git stash apply` against the entry named:
+
+    freshen 672bb50f: pre-existing WIP
+
+Stashed files and a best guess at the next step for each:
+
+- doing.txt — staged but never committed running notes from the 2026-07-26 and 2026-07-27
+  freshen passes. Two items are marked resolved and can be dropped; the two still open are
+  the ruff `too-many-statements-in-try-clause` in `_run_shell_command` (fix by narrowing the
+  try block to one failure mode rather than adding an inline ignore) and the POSTPROCESSORS
+  "document" versus "root" key mismatch that makes the plugin inert end to end. Next step is
+  to decide whether doing.txt belongs in git at all, then either commit the trimmed file or
+  move the two open items into an issue and drop it.
