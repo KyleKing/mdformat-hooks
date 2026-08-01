@@ -135,30 +135,28 @@ def update_mdit(mdit: Any) -> None:  # ruff: ignore[any-type]
 RENDERERS: Mapping[str, Any] = {}
 
 
-# Postprocessor needs to be dynamically created based on configuration
-# but mdformat expects a static dict. We'll create a wrapper that checks
-# options at runtime
+ROOT_NODE_TYPE = "root"
+
+
 def _dynamic_postprocessor(
     text: str, node: RenderTreeNode, context: RenderContext
 ) -> str:
-    """Dynamic postprocessor that checks for commands at runtime.
+    """Run the configured post command over the whole rendered document.
 
-    Only processes the document root node to avoid running hooks
-    multiple times for nested nodes in the rendering tree.
+    Registered only for the root node so the command sees the document once.
+    The command receives a trailing newline on stdin and its output is
+    stripped of trailing newlines, because mdformat appends its own.
     """
-    # Only process the document root node
-    if node.type != "document":
+    if node.type != ROOT_NODE_TYPE:
         return text
 
-    options = context.options
+    processor = _create_post_processor(context.options)
+    if not processor:
+        return text
 
-    # The options might be under different keys depending on how mdformat is called
-    # Check for configuration in the expected location
-    processor = _create_post_processor(options)
-    if processor:
-        return processor(text, node, context)
-    return text
+    stdin = text if text.endswith("\n") else text + "\n"
+    return processor(stdin, node, context).rstrip("\n")
 
 
 # Static postprocessor mapping expected by mdformat
-POSTPROCESSORS: Mapping[str, Postprocess] = {"document": _dynamic_postprocessor}
+POSTPROCESSORS: Mapping[str, Postprocess] = {ROOT_NODE_TYPE: _dynamic_postprocessor}

@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import shlex
+import sys
 from unittest.mock import Mock, patch
 
 import mdformat
 import pytest
+from mdformat._cli import run
 
 from mdformat_hooks.plugin import (
     POSTPROCESSORS,
@@ -49,16 +52,16 @@ def test_run_shell_command_timeout():
 
 
 def test_postprocessors_dict():
-    """Test POSTPROCESSORS is a proper dict with document processor."""
+    """POSTPROCESSORS is keyed on the node type mdformat renders from."""
     assert isinstance(POSTPROCESSORS, dict)
-    assert "document" in POSTPROCESSORS
-    assert callable(POSTPROCESSORS["document"])
+    assert "root" in POSTPROCESSORS
+    assert callable(POSTPROCESSORS["root"])
 
 
 def test_dynamic_postprocessor_with_no_config():
     """Test dynamic postprocessor returns text unchanged with no config."""
     mock_context = Mock(options={"mdformat": {"plugin": {"hooks": {}}}})
-    result = _dynamic_postprocessor("test text", Mock(), mock_context)
+    result = _dynamic_postprocessor("test text", Mock(type="root"), mock_context)
     assert result == "test text"
 
 
@@ -76,7 +79,7 @@ def test_dynamic_postprocessor_with_commands():
             }
         }
     )
-    result = _dynamic_postprocessor("test text", Mock(), mock_context)
+    result = _dynamic_postprocessor("test text", Mock(type="root"), mock_context)
     # The cat command should return the same text
     assert result == "test text"
 
@@ -137,6 +140,44 @@ def test_mdformat_with_post_command():
     assert result == "# Hello\n\nWorld!\n"
 
 
+def test_mdformat_post_command_rewrites_output():
+    """A rewriting command reaches the real render path, not just a mocked node."""
+    options = {"plugin": {"hooks": {"post_command": "sed s/World/Mars/"}}}
+
+    result = mdformat.text("# Hello\n\nWorld!\n", extensions={"hooks"}, options=options)
+
+    assert result == "# Hello\n\nMars!\n"
+
+
+def test_mdformat_post_command_receives_trailing_newline():
+    """The command reads a POSIX-style final newline and adds no blank line."""
+    script = (
+        "import sys;"
+        "sys.stdout.write('ends-with-newline'"
+        " if sys.stdin.read().endswith(chr(10)) else 'no-trailing-newline')"
+    )
+    command = f"{shlex.quote(sys.executable)} -c {shlex.quote(script)}"
+    options = {"plugin": {"hooks": {"post_command": command}}}
+
+    result = mdformat.text("Hello\n", extensions={"hooks"}, options=options)
+
+    assert result == "ends-with-newline\n"
+
+
+def test_cli_applies_post_command_from_toml(tmp_path):
+    """The CLI honors a `.mdformat.toml` hook against a real file on disk."""
+    (tmp_path / ".mdformat.toml").write_text(
+        '[plugin.hooks]\npost_command = "sed s/World/Mars/"\n'
+    )
+    target = tmp_path / "doc.md"
+    target.write_text("# Hello\n\nWorld!\n")
+
+    exit_code = run([str(target), "--no-validate"])
+
+    assert exit_code == 0
+    assert target.read_text() == "# Hello\n\nMars!\n"
+
+
 # Strict mode tests
 def test_strict_mode_success():
     """Strict mode passes when command succeeds."""
@@ -170,7 +211,7 @@ def test_strict_mode_disabled_by_default():
 def test_strict_mode_with_post_command_failure():
     """Strict mode raises exception on post_command failure."""
     mock_node = Mock()
-    mock_node.type = "document"
+    mock_node.type = "root"
 
     mock_context = Mock()
     mock_context.options = {
@@ -193,7 +234,7 @@ def test_strict_mode_with_post_command_failure():
 def test_strict_mode_with_post_command_success():
     """Strict mode allows successful post_command to pass."""
     mock_node = Mock()
-    mock_node.type = "document"
+    mock_node.type = "root"
 
     mock_context = Mock()
     mock_context.options = {
