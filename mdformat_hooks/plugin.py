@@ -72,35 +72,37 @@ def _run_shell_command(
             timeout=timeout,
             check=False,
         )
-
-        if result.returncode == 0:
-            return result.stdout
-        # On error, log and either raise (strict mode) or return original text
-        error_msg = (
-            f"mdformat-hooks: Command failed with code {result.returncode}: {command}"
-        )
-        print(error_msg, file=sys.stderr)  # ruff: ignore[print]
-        if result.stderr:
-            print(f"Error output: {result.stderr}", file=sys.stderr)  # ruff: ignore[print]
-        if strict:
-            stderr_info = f"stderr: {result.stderr}"
-            full_error = (
-                f"Command failed with exit code {result.returncode}: {command}\n"
-                f"{stderr_info}"
-            )
-            raise RuntimeError(full_error)  # ruff: ignore[raise-within-try]
-    except subprocess.TimeoutExpired as e:
+    except subprocess.TimeoutExpired as err:
         timeout_msg = (
             f"mdformat-hooks: Command timed out after {timeout} seconds: {command}"
         )
         print(timeout_msg, file=sys.stderr)  # ruff: ignore[print]
         if strict:
-            raise RuntimeError(timeout_msg) from e
-    except Exception as e:
-        error_msg = f"mdformat-hooks: Error running command: {e}"
+            raise RuntimeError(timeout_msg) from err
+        return text
+    except Exception as err:
+        error_msg = f"mdformat-hooks: Error running command: {err}"
         print(error_msg, file=sys.stderr)  # ruff: ignore[print]
         if strict:
             raise
+        return text
+
+    if result.returncode == 0:
+        return result.stdout
+
+    error_msg = (
+        f"mdformat-hooks: Command failed with code {result.returncode}: {command}"
+    )
+    print(error_msg, file=sys.stderr)  # ruff: ignore[print]
+    if result.stderr:
+        print(f"Error output: {result.stderr}", file=sys.stderr)  # ruff: ignore[print]
+    if strict:
+        stderr_info = f"stderr: {result.stderr}"
+        full_error = (
+            f"Command failed with exit code {result.returncode}: {command}\n"
+            f"{stderr_info}"
+        )
+        raise RuntimeError(full_error)
     return text
 
 
