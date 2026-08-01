@@ -75,6 +75,13 @@ That is worth adding once a hook command is available in the canary environment;
 tox -e hook-min
 ```
 
+Runs `mdformat` over `tests/pre-commit-test.md` with this repo's own `.mdformat.toml`, so it is the only gate that exercises a real `post_command` end to end. The same command runs in CI as the `prek-hook` job.
+
+Two constraints keep it honest:
+
+- `.pre-commit-test.yaml` passes `--no-validate`, because `mdsf` reformats code blocks and the mdformat CLI refuses to write output whose HTML differs from the input's. Without the flag the hook fails on every file it actually changes
+- The fixture holds real `mdsf` output, so its content is a function of the installed formatter versions. `mdsf`, `ruff`, `sqlfluff`, `toml-sort`, and `typos` are pinned in `.config/mise.dev.toml` and `.config/mise.ci.toml`, and `mdsf` is pinned again in `tests.yml` (both the action ref and its `version` input) since CI installs it through the action rather than mise. `mdsf.json`'s `$schema` tracks the pinned `mdsf`. Bumping any of them is a deliberate change: bump the pin, run `tox -e hook-min` twice, and commit the reformatted fixture alongside it
+
 ## One-Off Testing
 
 ```bash
