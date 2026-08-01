@@ -1,0 +1,21 @@
+# Open work (last reviewed 2026-08-01)
+
+1. The hook fixture pins no tool versions. tests/pre-commit-test.md now holds real mdsf
+   output, and .config/mise.ci.toml installs ruff, sqlfluff, toml-sort, and typos at
+   "latest", so any upstream formatting change turns tox -e hook-min and the prek-hook CI
+   job red with a diff that has nothing to do with this plugin. Either pin the four tools
+   or narrow the fixture to blocks whose formatting is stable.
+
+2. mdsf.json pins "$schema" at v0.11.0 while the installed CLI is 0.12.0, so every hook run
+   prints a version-mismatch warning. Cosmetic; bump the schema URL and confirm mdsf.json
+   still validates.
+
+3. scripts/canary_repos.json stays empty. An entry can now carry a post_command through its
+   "options" field (example in AGENTS.md), but no public repo configures one and
+   tox -e canary installs no hook binary. Worth revisiting if mdsf lands in the canary env.
+
+4. _INJECTION_CASES in tests/render/test_security.py is empty. Fine while the plugin
+   registers no render sinks; revisit if it ever gains one.
+
+5. Decide whether this file belongs in git at all, or whether these items should be GitHub
+   issues.
