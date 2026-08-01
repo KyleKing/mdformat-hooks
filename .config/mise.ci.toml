@@ -1,5 +1,8 @@
 [tools]
-"cargo:typos-cli" = "latest"
-"pipx:ruff" = "latest"
-"pipx:sqlfluff" = "latest"
-"pipx:toml-sort" = "latest"
+# Pinned: these formatters shape 'tests/pre-commit-test.md', which 'tox -e hook-min'
+# and the 'prek-hook' CI job diff. A floating version turns them red on an upstream
+# release. Bump deliberately and commit the reformatted fixture in the same change.
+"cargo:typos-cli" = "1.40.0"
+"pipx:ruff" = "0.16.1"
+"pipx:sqlfluff" = "4.2.2"
+"pipx:toml-sort" = "0.24.4"

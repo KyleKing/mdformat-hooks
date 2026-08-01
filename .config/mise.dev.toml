@@ -1,5 +1,7 @@
 [tools]
-"cargo:mdsf" = "latest" # In CI, installed with 'hougesen/mdsf'
+# Pinned with the formatters in mise.ci.toml, and with the 'hougesen/mdsf' version
+# input in tests.yml, which is how CI installs it. mdsf.json's '$schema' tracks this.
+"cargo:mdsf" = "0.12.0"
 "pipx:prek" = "latest" # In CI, installed with 'j178/prek-action'
 "pipx:pytest-watcher" = "latest"
 "pipx:tox" = {uvx_args = "--with tox-uv>=1.29.0", version = "4.32.0"}
