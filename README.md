@@ -84,6 +84,31 @@ formatted = mdformat.text(
 1. **mdformat**: The text is formatted by mdformat as usual
 1. **Post-command**: If configured, the formatted text is passed to the post-command via stdin for additional processing
 
+The command runs once per document, on the whole rendered file. Its stdin always ends in a newline, and trailing newlines in its stdout are dropped because mdformat appends its own. Link reference definitions are written after the hook runs, so a command that rewrites `[label]: url` lines will not see them.
+
+### The `--no-validate` requirement
+
+The mdformat CLI re-parses its own output and refuses to write a file whose HTML differs from the input's. A post-command that changes anything visible (reformatting code blocks with `mdsf`, fixing typos) trips that check, so the CLI needs `--no-validate`:
+
+```bash
+mdformat --no-validate --post-command "mdsf format --stdin" document.md
+```
+
+For pre-commit, pass it in `args`:
+
+```yaml
+repos:
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 1.0.0
+    hooks:
+      - id: mdformat
+        args: [--no-validate]
+        additional_dependencies:
+          - mdformat-hooks
+```
+
+Validation is skipped for the whole run, including the parts of the output mdformat itself produced, so keep the hook narrow and rely on `strict_hooks` to catch command failures. `mdformat.text` does not validate, so the Python API needs nothing extra.
+
 ### Error Handling
 
 By default, mdformat-hooks uses graceful error handling:
@@ -125,7 +150,7 @@ Since commands run in shell, you can chain multiple operations as long as the to
 
 ```toml
 [plugin.hooks]
-post_command = "mdsf format --stdin | typos-cli - --write-changes"
+post_command = "mdsf format --stdin | typos - --write-changes"
 ```
 
 ## Contributing
