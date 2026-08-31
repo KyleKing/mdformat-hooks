@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import shlex
 import sys
 from unittest.mock import Mock, patch
 
@@ -149,14 +148,17 @@ def test_mdformat_post_command_rewrites_output():
     assert result == "# Hello\n\nMars!\n"
 
 
-def test_mdformat_post_command_receives_trailing_newline():
+def test_mdformat_post_command_receives_trailing_newline(tmp_path):
     """The command reads a POSIX-style final newline and adds no blank line."""
-    script = (
-        "import sys;"
+    # A script file rather than `-c`: shlex.quote emits POSIX single quotes, which
+    # cmd.exe passes through literally and then fails to parse.
+    script = tmp_path / "check_newline.py"
+    script.write_text(
+        "import sys\n"
         "sys.stdout.write('ends-with-newline'"
-        " if sys.stdin.read().endswith(chr(10)) else 'no-trailing-newline')"
+        " if sys.stdin.read().endswith(chr(10)) else 'no-trailing-newline')\n"
     )
-    command = f"{shlex.quote(sys.executable)} -c {shlex.quote(script)}"
+    command = f'"{sys.executable}" "{script}"'
     options = {"plugin": {"hooks": {"post_command": command}}}
 
     result = mdformat.text("Hello\n", extensions={"hooks"}, options=options)
