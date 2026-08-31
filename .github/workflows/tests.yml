@@ -38,6 +38,10 @@ jobs:
 
   prek-hook:
     runs-on: ubuntu-latest
+    # Job-level, not step-level: the mise shims resolve the version when the hook
+    # runs, so a later step without MISE_ENV fails with "No version is set for shim"
+    env:
+      MISE_ENV: ci
     steps:
       - uses: actions/checkout@v6
       - name: Install uv and Python
@@ -53,11 +57,7 @@ jobs:
         uses: hougesen/mdsf@v0.12.0
         with:
           version: 0.12.0
-      # An inline mise_toml replaces the config instead of layering on it, so
-      # .config/mise.ci.toml's typos pin never installs. MISE_ENV must be an env var.
       - uses: jdx/mise-action@v2
-        env:
-          MISE_ENV: ci
       - name: Install Package
         run: uv pip install ".[test]"
       - name: run prek with plugin
